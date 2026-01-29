@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customer Orders</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #101418;
+        --muted: #5a6672;
+        --paper: #f7f4ef;
+        --card: #ffffff;
+        --accent: #e86a33;
+        --accent-dark: #b94b1f;
+        --line: #e1dcd5;
+        --shadow: 0 24px 40px rgba(16, 20, 24, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Space Grotesk", sans-serif;
+        color: var(--ink);
+        background: radial-gradient(circle at 15% 10%, #f7efe6, #f1efe9 55%, #eee8e1);
+      }
+
+      .page {
+        min-height: 100vh;
+        padding: 36px 24px 60px;
+      }
+
+      .content {
+        max-width: 1160px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      header {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .brand img {
+        width: min(220px, 70vw);
+        height: auto;
+        filter: drop-shadow(0 8px 18px rgba(16, 20, 24, 0.18));
+      }
+
+      .eyebrow {
+        font-size: 14px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      h1 {
+        font-family: "Fraunces", serif;
+        font-size: clamp(32px, 5vw, 52px);
+        margin: 0;
+      }
+
+      .orders-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 18px;
+        align-items: start;
+      }
+
+      .phase {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 22px;
+        padding: 18px;
+        border: 1px solid rgba(225, 220, 213, 0.7);
+        transition: padding 0.2s ease, opacity 0.2s ease;
+        align-self: start;
+      }
+
+      .phase-cards {
+        display: grid;
+        gap: 12px;
+      }
+
+      .phase-title {
+        font-size: 18px;
+        margin: 0;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .order-card {
+        text-decoration: none;
+        color: inherit;
+        background: linear-gradient(160deg, #ffffff, #fff7f0);
+        border-radius: 20px;
+        padding: 18px 20px;
+        border: 1px solid rgba(225, 220, 213, 0.8);
+        box-shadow: var(--shadow);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        min-height: 160px;
+      }
+
+      .order-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 30px rgba(16, 20, 24, 0.12);
+      }
+
+      .order-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--muted);
+      }
+
+      .order-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin: 0;
+      }
+
+      .order-footer {
+        margin-top: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .customer-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--ink);
+      }
+
+      .empty-state {
+        font-size: 14px;
+        color: var(--muted);
+        margin: 0;
+      }
+
+      .phase.collapsed {
+        padding: 12px 16px;
+        opacity: 0.85;
+        min-height: 190px;
+      }
+
+      .phase.collapsed .phase-cards {
+        display: none;
+      }
+
+      .phase.collapsed .phase-title {
+        margin-bottom: 6px;
+      }
+
+      .phase.collapsed .empty-state {
+        margin-top: 6px;
+      }
+
+      .status-pill {
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px solid #e5dbcf;
+        background: #f6ede4;
+        color: #8a4a2b;
+        font-weight: 600;
+      }
+
+      .status-pill.done {
+        background: #ddf4e2;
+        color: #1f5e35;
+        border-color: #bfe6c8;
+      }
+
+      .status-pill.new {
+        background: #e9edf2;
+        color: #3a4a59;
+        border-color: #d2dbe3;
+      }
+
+      .pill {
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px solid #f0c9b6;
+        background: #ffe6da;
+        color: var(--accent-dark);
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="content">
+        <header>
+          <div class="brand">
+            <img src="../signwale.png" alt="Signwale" />
+          </div>
+          <span class="eyebrow">Signwale Manufacturing</span>
+          <h1>Customer Orders</h1>
+        </header>
+
+        <section class="orders-grid">
+          <div class="phase" id="phase-new">
+            <h2 class="phase-title">New Orders</h2>
+            <div class="phase-cards" id="orders-new"></div>
+            <p class="empty-state" id="empty-new">No new orders yet.</p>
+          </div>
+
+          <div class="phase" id="phase-ongoing">
+            <h2 class="phase-title">Ongoing Orders</h2>
+            <div class="phase-cards" id="orders-ongoing"></div>
+            <p class="empty-state" id="empty-ongoing">No ongoing orders yet.</p>
+          </div>
+
+          <div class="phase" id="phase-completed">
+            <h2 class="phase-title">Completed Orders</h2>
+            <div class="phase-cards" id="orders-completed"></div>
+            <p class="empty-state" id="empty-completed">No completed orders yet.</p>
+          </div>
+        </section>
+      </div>
+    </div>
+    <script>
+      const APP_BASE = window.ORDER_APP_BASE || window.location.origin;
+      const resolveApiBase = () => {
+        if (window.ORDER_API_BASE) return window.ORDER_API_BASE;
+        const host = window.location.hostname;
+        if (host === "localhost" || host === "127.0.0.1") {
+          return "http://localhost:5000/api";
+        }
+        return `${APP_BASE}/api`;
+      };
+      const API_BASE = resolveApiBase();
+
+      const resolveAuthToken = () => {
+        const params = new URLSearchParams(window.location.search);
+        const urlToken = params.get("token") || params.get("authToken");
+        if (urlToken) {
+          localStorage.setItem("authToken", urlToken);
+          params.delete("token");
+          params.delete("authToken");
+          const query = params.toString();
+          const nextUrl = `${window.location.pathname}${query ? `?${query}` : ""}${
+            window.location.hash || ""
+          }`;
+          window.history.replaceState(null, "", nextUrl);
+        }
+        return (
+          localStorage.getItem("authToken") ||
+          sessionStorage.getItem("authToken") ||
+          localStorage.getItem("token") ||
+          localStorage.getItem("jwt") ||
+          ""
+        );
+      };
+
+      const token = resolveAuthToken();
+
+      const containers = {
+        new: document.getElementById("orders-new"),
+        ongoing: document.getElementById("orders-ongoing"),
+        completed: document.getElementById("orders-completed"),
+      };
+      const phases = {
+        new: document.getElementById("phase-new"),
+        ongoing: document.getElementById("phase-ongoing"),
+        completed: document.getElementById("phase-completed"),
+      };
+      const emptyStates = {
+        new: document.getElementById("empty-new"),
+        ongoing: document.getElementById("empty-ongoing"),
+        completed: document.getElementById("empty-completed"),
+      };
+
+      function formatOrderTitle(order) {
+        return (
+          order.business_name ||
+          order.customer_name ||
+          order.order_type ||
+          `Order #${order.order_id}`
+        );
+      }
+
+      function formatCustomerName(order) {
+        return order.customer_name || "Customer";
+      }
+
+      function mapPhase(stage) {
+        const normalized = (stage || "").toLowerCase();
+        if (normalized === "completed") return "completed";
+        if (["approved", "in_progress"].includes(normalized)) return "ongoing";
+        if (["new", "quoted", "pending_client"].includes(normalized)) return "new";
+        return null;
+      }
+
+      function statusLabel(stage) {
+        const normalized = (stage || "").toLowerCase();
+        if (normalized === "completed") return { label: "Done", className: "done" };
+        if (normalized === "approved") return { label: "Approved", className: "" };
+        if (normalized === "in_progress") return { label: "In Progress", className: "" };
+        if (normalized === "new") return { label: "New", className: "new" };
+        if (normalized === "quoted") return { label: "Quoted", className: "" };
+        if (normalized === "pending_client") return { label: "Pending", className: "" };
+        return { label: "Active", className: "" };
+      }
+
+      function renderOrders(orders) {
+        Object.values(containers).forEach((container) => (container.innerHTML = ""));
+        Object.values(emptyStates).forEach((node) => (node.style.display = "block"));
+        Object.values(phases).forEach((phase) => phase.classList.add("collapsed"));
+
+        orders.forEach((order) => {
+          const phase = mapPhase(order.stage);
+          if (!phase) return;
+
+          const title = formatOrderTitle(order);
+          const customer = formatCustomerName(order);
+          const status = statusLabel(order.stage);
+          const orderId = String(order.order_id);
+
+          const link = `/plan_page.html?order=${encodeURIComponent(
+            orderId
+          )}&name=${encodeURIComponent(title)}&customer=${encodeURIComponent(customer)}`;
+
+          const card = document.createElement("a");
+          card.className = "order-card";
+          card.href = link;
+          card.innerHTML = `
+            <div class="order-meta">
+              <span>Order #${orderId}</span>
+              <span class="status-pill ${status.className}">${status.label}</span>
+            </div>
+            <h2 class="order-title">${title}</h2>
+            <div class="order-footer">
+              <span class="customer-name">Customer: ${customer}</span>
+              <span>Stage: ${(order.stage || "active").replace("_", " ")}</span>
+            </div>
+          `;
+
+          containers[phase].appendChild(card);
+          emptyStates[phase].style.display = "none";
+          phases[phase].classList.remove("collapsed");
+        });
+      }
+
+      async function loadOrders() {
+        if (!token) {
+          const redirect = encodeURIComponent(
+            `${window.location.pathname}${window.location.search}${window.location.hash || ""}`
+          );
+          window.location.href = `${APP_BASE}/login?redirect=${redirect}`;
+          Object.values(emptyStates).forEach((node) => {
+            node.textContent =
+              "Redirecting to login...";
+          });
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_BASE}/data/orders`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (!response.ok) {
+            throw new Error(`Failed to fetch orders (${response.status})`);
+          }
+          const data = await response.json();
+          renderOrders(data.orders || []);
+        } catch (error) {
+          Object.values(emptyStates).forEach((node) => {
+            node.textContent = "Unable to load orders from backend.";
+          });
+          console.error(error);
+        }
+      }
+
+      loadOrders();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,2605 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Update Page</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #1f2937;
+        --muted: #6b7280;
+        --paper: #f9fafb;
+        --card: #ffffff;
+        --accent: #3b82f6;
+        --accent-dark: #1e40af;
+        --accent-soft: #dbeafe;
+        --line: #e5e7eb;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Space Grotesk", sans-serif;
+        color: var(--ink);
+        background: radial-gradient(circle at 10% 10%, #f3f4f6, #fafbfc 55%, #f9fafb);
+      }
+
+      .page {
+        min-height: 100vh;
+        padding: 32px 24px 60px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .page::before,
+      .page::after {
+        content: "";
+        position: absolute;
+        width: 360px;
+        height: 360px;
+        border-radius: 50%;
+        background: linear-gradient(130deg, rgba(59, 130, 246, 0.1), rgba(219, 234, 254, 0.05));
+        filter: blur(0);
+        z-index: 0;
+      }
+
+      .page::before {
+        top: -120px;
+        right: -80px;
+      }
+
+      .page::after {
+        bottom: -160px;
+        left: -120px;
+      }
+
+      .content {
+        max-width: 1160px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+      }
+
+      header {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .header-top {
+        display: flex;
+        justify-content: flex-start;
+      }
+
+      .eyebrow {
+        font-size: 14px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      h1 {
+        font-family: "Fraunces", serif;
+        font-size: clamp(32px, 5vw, 52px);
+        margin: 0;
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+      }
+
+      .hero-card {
+        background: var(--card);
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: var(--shadow);
+        border: 1px solid #e5e7eb;
+      }
+
+      .hero-card p {
+        margin: 6px 0 0;
+        color: var(--muted);
+      }
+
+      .meta-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+      }
+
+      .field {
+        background: var(--card);
+        border-radius: 18px;
+        padding: 16px;
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .field label {
+        font-size: 12px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+      }
+
+      .field input,
+      .field select,
+      .field textarea {
+        font-family: inherit;
+        font-size: 15px;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        padding: 10px 12px;
+        background: #f9fafb;
+      }
+
+      .stages {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .section-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .section-head h2 {
+        font-size: 22px;
+        margin: 0;
+      }
+
+      .btn {
+        border: none;
+        padding: 10px 18px;
+        border-radius: 999px;
+        background: var(--accent);
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 18px rgba(59, 130, 246, 0.2);
+      }
+
+      .btn-secondary {
+        background: #f3f4f6;
+        color: var(--ink);
+        border: 1px solid #e5e7eb;
+      }
+
+      .stage-card {
+        background: var(--card);
+        border-radius: 20px;
+        padding: 18px 20px 22px;
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow);
+        animation: rise 0.6s ease both;
+      }
+
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .stage-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .stage-title {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .stage-title h3 {
+        margin: 0;
+        font-size: 20px;
+      }
+
+      .stage-title span {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .chip {
+        background: var(--accent-soft);
+        color: var(--accent-dark);
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .stage-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .status-select {
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        padding: 6px 10px;
+        font-family: inherit;
+        background: #fff;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--ink);
+      }
+
+      .status-select.status-todo {
+        background: #f2f4f7;
+        color: #3a4a59;
+        border-color: #d2dbe3;
+      }
+
+      .status-select.status-in-progress {
+        background: #fef3c7;
+        border-color: #fde68a;
+        color: #92400e;
+      }
+
+      .status-select.status-done {
+        background: #d1fae5;
+        border-color: #a7f3d0;
+        color: #065f46;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+
+      .table-wrap {
+        width: 100%;
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 10px 8px;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      th {
+        color: var(--muted);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+      }
+
+      td input {
+        width: 100%;
+        border-radius: 10px;
+        border: 1px solid transparent;
+        background: #f9fafb;
+        padding: 6px 8px;
+        font-family: inherit;
+        font-size: 14px;
+      }
+
+      td input:focus {
+        outline: none;
+        border-color: #e5e7eb;
+        background: #fff;
+      }
+
+      td input[type="file"] {
+        padding: 6px 6px;
+        font-size: 12px;
+        background: #fff;
+      }
+
+      .file-meta {
+        margin-top: 6px;
+        font-size: 12px;
+        color: var(--muted);
+        word-break: break-word;
+      }
+
+      .file-actions {
+        margin-top: 6px;
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .file-action-btn {
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--ink);
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        cursor: pointer;
+      }
+
+      .file-input input[type="file"] {
+        display: none;
+      }
+
+      .update-box {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 12px;
+        background: #f9fafb;
+        display: grid;
+        gap: 10px;
+      }
+
+      .update-box label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--muted);
+      }
+
+      .update-box textarea {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        padding: 8px 10px;
+        font-family: inherit;
+        font-size: 13px;
+        background: #fff;
+        min-height: 70px;
+        resize: vertical;
+      }
+
+      .activity-list {
+        display: grid;
+        gap: 16px;
+      }
+
+      .activity-card {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 16px;
+        background: #fff;
+        display: grid;
+        gap: 12px;
+      }
+
+      .activity-top {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 12px;
+      }
+
+      .activity-field label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--muted);
+      }
+
+      .activity-field input {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        padding: 8px 10px;
+        font-family: inherit;
+        font-size: 14px;
+        background: #f9fafb;
+      }
+
+      .activity-name {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        padding: 8px 10px;
+        font-family: inherit;
+        font-size: 14px;
+        background: #f3f4f6;
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+        color: #1f2937;
+      }
+
+      .activity-footer {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+      }
+
+      .done-cell {
+        width: 70px;
+        text-align: center;
+      }
+
+      .activity-form {
+        margin-top: 12px;
+        display: none;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+      }
+
+      .activity-form.visible {
+        display: flex;
+      }
+
+      .activity-form input,
+      .activity-form textarea,
+      .activity-form select {
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        padding: 8px 10px;
+        font-family: inherit;
+      }
+
+      .activity-form textarea {
+        min-height: 36px;
+        max-height: 60px;
+        resize: vertical;
+      }
+
+      .activity-form input,
+      .activity-form textarea,
+      .activity-form select {
+        min-width: 110px;
+      }
+
+      .activity-form input[type="file"] {
+        min-width: 160px;
+      }
+
+      .activity-actions {
+        display: flex;
+        gap: 10px;
+      }
+
+      .mini-select {
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        padding: 8px 12px;
+        font-family: inherit;
+        background: #fff;
+        font-size: 13px;
+      }
+
+      .activity-form .mini-select input[type="checkbox"] {
+        width: 12px;
+        height: 12px;
+      }
+
+      .btn-ghost {
+        background: transparent;
+        color: var(--ink);
+        border: 1px solid var(--line);
+      }
+
+      .btn-danger {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+      }
+
+      .table-head {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .add-column-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 1px solid #e5e7eb;
+        background: #eff6ff;
+        color: var(--accent-dark);
+        font-weight: 700;
+        cursor: pointer;
+        line-height: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .stage-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 14px;
+        flex-wrap: wrap;
+      }
+
+      .stage-footer .btn-danger {
+        justify-self: end;
+      }
+
+      .stage-footer-left {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .review-field {
+        padding: 10px 12px;
+        min-width: 200px;
+        text-align: center;
+      }
+
+      .review-field label {
+        font-size: 11px;
+      }
+
+      .review-field input {
+        padding: 6px 8px;
+        font-size: 13px;
+      }
+
+      .stages-footer {
+        display: flex;
+        justify-content: flex-start;
+      }
+
+      .add-stage {
+        display: grid;
+        gap: 12px;
+        background: #eff6ff;
+        padding: 18px;
+        border-radius: 18px;
+        border: 1px dashed #bfdbfe;
+      }
+
+      .footer {
+        display: grid;
+        gap: 12px;
+      }
+
+      .footer textarea {
+        min-height: 120px;
+        resize: vertical;
+      }
+
+      .submit-bar {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+      }
+
+      .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        pointer-events: none;
+      }
+
+      .toast {
+        background: #101418;
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: 12px;
+        font-size: 13px;
+        box-shadow: 0 12px 24px rgba(16, 20, 24, 0.2);
+        opacity: 0;
+        transform: translateY(-6px);
+        transition: opacity 0.2s ease, transform 0.2s ease;
+      }
+
+      .toast.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .plan-status {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        border: 1px solid transparent;
+        background: #f2f4f7;
+        color: #3a4a59;
+      }
+
+      .status-pill.status-draft {
+        background: #f2f4f7;
+        border-color: #d2dbe3;
+        color: #3a4a59;
+      }
+
+      .status-pill.status-submitted {
+        background: #fef3c7;
+        border-color: #fde68a;
+        color: #92400e;
+      }
+
+      .status-pill.status-approved {
+        background: #d1fae5;
+        border-color: #a7f3d0;
+        color: #065f46;
+      }
+
+      .status-pill.status-needs_changes {
+        background: #fee2e2;
+        border-color: #fecaca;
+        color: #991b1b;
+      }
+
+      .status-note {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .history-overlay,
+      .update-overlay,
+      .confirm-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(31, 41, 55, 0.4);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        padding: 20px;
+      }
+
+      .history-overlay.visible,
+      .update-overlay.visible,
+      .confirm-overlay.visible {
+        display: flex;
+      }
+
+      .history-panel,
+      .update-panel,
+      .confirm-panel {
+        background: var(--card);
+        border-radius: 20px;
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow);
+        width: min(640px, 100%);
+        max-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .history-header,
+      .update-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .history-header h3,
+      .update-header h3 {
+        margin: 0;
+        font-size: 18px;
+      }
+
+      .history-body {
+        padding: 16px 20px 20px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .history-item {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 12px 14px;
+        background: #f9fafb;
+      }
+
+      .history-item strong {
+        display: block;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+      }
+
+      .history-item p {
+        margin: 6px 0 0;
+        font-size: 14px;
+      }
+
+      .history-meta {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 6px;
+      }
+
+      .history-empty {
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .history-btn {
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: #fff;
+        padding: 6px 10px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        cursor: pointer;
+      }
+
+      .activity-status {
+        border-radius: 999px;
+        border: 1px solid transparent;
+        padding: 6px 12px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        cursor: pointer;
+        font-weight: 600;
+      }
+
+      .activity-status.status-start {
+        background: #fee2e2;
+        border-color: #fecaca;
+        color: #991b1b;
+      }
+
+      .activity-status.status-in-progress {
+        background: #fef3c7;
+        border-color: #fde68a;
+        color: #92400e;
+      }
+
+      .activity-status.status-done {
+        background: #d1fae5;
+        border-color: #a7f3d0;
+        color: #065f46;
+      }
+
+      .activity-status.status-rework {
+        background: #fef3c7;
+        border-color: #fde68a;
+        color: #92400e;
+      }
+
+      .update-body {
+        padding: 16px 20px 20px;
+        overflow-y: auto;
+        display: grid;
+        gap: 14px;
+      }
+
+      .update-body label {
+        font-size: 12px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+      }
+
+      .update-body input,
+      .update-body select,
+      .update-body textarea {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        padding: 10px 12px;
+        font-family: inherit;
+        font-size: 14px;
+        background: #faf9f7;
+      }
+
+      .update-body textarea {
+        min-height: 110px;
+        resize: vertical;
+      }
+
+      .update-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        padding: 0 20px 20px;
+      }
+
+      .confirm-body {
+        padding: 20px;
+        display: grid;
+        gap: 14px;
+      }
+
+      @media (max-width: 720px) {
+        .activity-top {
+          grid-template-columns: 1fr;
+        }
+
+        .activity-footer {
+          justify-content: stretch;
+        }
+
+        .activity-footer .history-btn {
+          flex: 1 1 160px;
+        }
+
+        .section-head {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .submit-bar {
+          justify-content: stretch;
+        }
+
+        .submit-bar .btn {
+          width: 100%;
+        }
+
+        .stage-footer {
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .review-field {
+          text-align: left;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="toast-container" id="toast-container"></div>
+    <div class="history-overlay" id="history-overlay">
+      <div class="history-panel" role="dialog" aria-modal="true" aria-labelledby="history-title">
+        <div class="history-header">
+          <h3 id="history-title">Activity History</h3>
+          <button class="btn btn-secondary" type="button" id="history-close">Close</button>
+        </div>
+        <div class="history-body" id="history-body">
+          <p class="history-empty">No history yet.</p>
+        </div>
+      </div>
+    </div>
+    <div class="update-overlay" id="update-overlay">
+      <div class="update-panel" role="dialog" aria-modal="true" aria-labelledby="update-title">
+        <div class="update-header">
+          <h3 id="update-title">Add Activity Update</h3>
+          <button class="btn btn-secondary" type="button" id="update-close">Close</button>
+        </div>
+        <form class="update-body" id="update-form">
+          <div>
+            <label for="update-status">Status</label>
+            <select id="update-status" name="status">
+              <option value="start">start</option>
+              <option value="done">done</option>
+              <option value="rework">rework</option>
+            </select>
+          </div>
+          <div>
+            <label for="update-note">Note</label>
+            <textarea id="update-note" name="note" placeholder="Add update notes"></textarea>
+          </div>
+          <div>
+            <label for="update-images">Images</label>
+            <input id="update-images" name="images" type="file" accept="image/*" />
+            <div class="file-actions">
+              <button class="file-action-btn" type="button" data-file-action="capture" data-file-target="update-images" data-capture-value="environment">Take</button>
+              <button class="file-action-btn" type="button" data-file-action="upload" data-file-target="update-images">Upload</button>
+            </div>
+            <div class="file-meta" id="update-images-meta" style="margin-top:6px; font-size:12px; color:var(--muted);"></div>
+          </div>
+          <div>
+            <label for="update-video">Video</label>
+            <input id="update-video" name="video" type="file" accept="video/*" />
+            <div class="file-actions">
+              <button class="file-action-btn" type="button" data-file-action="capture" data-file-target="update-video" data-capture-value="environment">Record</button>
+              <button class="file-action-btn" type="button" data-file-action="upload" data-file-target="update-video">Upload</button>
+            </div>
+            <div class="file-meta" id="update-video-meta" style="margin-top:6px; font-size:12px; color:var(--muted);"></div>
+          </div>
+          <div>
+            <label for="update-audio">Voice</label>
+            <input id="update-audio" name="audio" type="file" accept="audio/*" />
+            <div class="file-actions">
+              <button class="file-action-btn" type="button" data-file-action="capture" data-file-target="update-audio" data-capture-value="microphone">Record</button>
+              <button class="file-action-btn" type="button" data-file-action="upload" data-file-target="update-audio">Upload</button>
+            </div>
+            <div class="file-meta" id="update-audio-meta" style="margin-top:6px; font-size:12px; color:var(--muted);"></div>
+          </div>
+        </form>
+        <div class="update-actions">
+          <button class="btn btn-secondary" type="button" id="update-cancel">Cancel</button>
+          <button class="btn" type="button" id="update-save">Save Update</button>
+        </div>
+      </div>
+    </div>
+    <div class="confirm-overlay" id="confirm-overlay">
+      <div class="confirm-panel" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+        <div class="update-header">
+          <h3 id="confirm-title">Confirm Update</h3>
+          <button class="btn btn-secondary" type="button" id="confirm-close">Close</button>
+        </div>
+        <div class="confirm-body">
+          <p>Confirm to update?</p>
+        </div>
+        <div class="update-actions">
+          <button class="btn btn-secondary" type="button" id="confirm-no">No</button>
+          <button class="btn" type="button" id="confirm-yes">Yes</button>
+        </div>
+      </div>
+    </div>
+    <div class="page">
+      <div class="content">
+        <header>
+          <div class="header-top">
+            <button class="btn btn-secondary" type="button" id="back-to-orders">Back to Orders</button>
+          </div>
+          <span class="eyebrow">Signwale Manufacturing</span>
+          <h1 id="page-title">Order Update Page</h1>
+        </header>
+
+        <section class="stages">
+          <div class="section-head">
+            <h2>Production Stages</h2>
+          </div>
+
+          <div id="stages-container"></div>
+
+          <form class="add-stage" id="stage-form" hidden></form>
+          <div class="stages-footer" hidden></div>
+        </section>
+        <section class="footer" hidden></section>
+      </div>
+    </div>
+
+    <script>
+      const APP_BASE = window.ORDER_APP_BASE || window.location.origin;
+      const API_BASE = (() => {
+        if (window.ORDER_API_BASE) return window.ORDER_API_BASE;
+        if (window.location.hostname === "localhost" && window.location.port === "3000") {
+          return "http://localhost:5000/api";
+        }
+        return `${APP_BASE}/api/api`;
+      })();
+
+      const resolveAuthToken = () => {
+        const params = new URLSearchParams(window.location.search);
+        const urlToken = params.get("token") || params.get("authToken");
+        if (urlToken) {
+          localStorage.setItem("authToken", urlToken);
+          params.delete("token");
+          params.delete("authToken");
+          const query = params.toString();
+          const nextUrl = `${window.location.pathname}${query ? `?${query}` : ""}${
+            window.location.hash || ""
+          }`;
+          window.history.replaceState(null, "", nextUrl);
+        }
+        return (
+          localStorage.getItem("authToken") ||
+          sessionStorage.getItem("authToken") ||
+          localStorage.getItem("token") ||
+          localStorage.getItem("jwt") ||
+          ""
+        );
+      };
+
+      const token = resolveAuthToken();
+
+      const pageTitle = document.getElementById("page-title");
+      const reviewNotes = document.getElementById("review-notes");
+      const submitPlanBtn = document.getElementById("submit-plan");
+      const backToOrdersBtn = document.getElementById("back-to-orders");
+      const toastContainer = document.getElementById("toast-container");
+      const historyOverlay = document.getElementById("history-overlay");
+      const historyBody = document.getElementById("history-body");
+      const historyCloseBtn = document.getElementById("history-close");
+      const updateOverlay = document.getElementById("update-overlay");
+      const updateForm = document.getElementById("update-form");
+      const updateCloseBtn = document.getElementById("update-close");
+      const updateCancelBtn = document.getElementById("update-cancel");
+      const updateSaveBtn = document.getElementById("update-save");
+      const updateStatusSelect = document.getElementById("update-status");
+      const updateNoteInput = document.getElementById("update-note");
+      const updateImagesInput = document.getElementById("update-images");
+      const updateVideoInput = document.getElementById("update-video");
+      const updateAudioInput = document.getElementById("update-audio");
+      const confirmOverlay = document.getElementById("confirm-overlay");
+      const confirmYesBtn = document.getElementById("confirm-yes");
+      const confirmNoBtn = document.getElementById("confirm-no");
+      const confirmCloseBtn = document.getElementById("confirm-close");
+
+      // File accumulation for modal inputs
+      let accumulatedFiles = {
+        images: [],
+        video: [],
+        audio: []
+      };
+
+      const params = new URLSearchParams(window.location.search);
+      const orderId = params.get("order_id") || params.get("order");
+      const orderName = params.get("name");
+
+      if (orderName) {
+        pageTitle.textContent = `Order Update Page: ${orderName}`;
+      }
+
+      const stagesContainer = document.getElementById("stages-container");
+      const stageForm = document.getElementById("stage-form");
+      const addStageToggle = document.getElementById("add-stage-toggle");
+
+      const UPDATE_UPLOAD_ENDPOINT = `${API_BASE}/data/activity/updates/upload`;
+      const UPDATE_HISTORY_ENDPOINT = (activityId) => `${API_BASE}/data/activity/${activityId}/history`;
+      const UPDATE_CREATE_ENDPOINT = (activityId) => `${API_BASE}/data/activity/${activityId}/updates`;
+
+      const defaultColumns = [
+        { key: "date", label: "Date" },
+        { key: "activity", label: "Activity" },
+        { key: "activity_status", label: "Status", type: "status" },
+        { key: "note", label: "Note", type: "note" },
+        { key: "video", label: "Video", type: "video" },
+        { key: "images", label: "Images", type: "images" },
+        { key: "audio", label: "Voice", type: "audio" },
+        { key: "update", label: "Add Update", type: "update" },
+        { key: "history", label: "History", type: "history" },
+      ];
+
+      const defaultStages = [
+        {
+          name: "Procurement",
+          target: "2026-01-21",
+          columns: defaultColumns.map((column) => ({ ...column })),
+          activities: [
+            {
+              activity: "Material received",
+              activity_status: "start",
+              note: "Checking quantities",
+              video: "",
+              images: "",
+              audio: "",
+              date: "2026-01-17",
+            },
+            {
+              activity: "Inventory logged",
+              activity_status: "start",
+              note: "Waiting on QC review",
+              video: "",
+              images: "",
+              audio: "",
+              date: "2026-01-18",
+            },
+          ],
+          reviewDate: "",
+          status: "in_progress",
+        },
+        {
+          name: "Fabrication",
+          target: "2026-01-28",
+          columns: defaultColumns.map((column) => ({ ...column })),
+          activities: [
+            {
+              activity: "Frame assembly",
+              activity_status: "rework",
+              note: "Welding in progress",
+              video: "",
+              images: "",
+              audio: "",
+              date: "2026-01-24",
+            },
+          ],
+          reviewDate: "",
+          status: "in_progress",
+        },
+      ];
+
+      const cloneStages = (stages) =>
+        (stages || []).map((stage) => ({
+          ...stage,
+          columns: (stage.columns || []).map((column) => ({ ...column })),
+          activities: (stage.activities || []).map((activity) => ({ ...activity })),
+        }));
+
+      let stagesState = cloneStages(defaultStages);
+      let hasLocalChanges = false;
+      let currentPlanStatus = "draft"; // Track the actual plan status from API
+
+      const markLocalChanges = () => {
+        hasLocalChanges = true;
+        scheduleAutoSave();
+      };
+
+      function ensureColumns(stage) {
+        if (!stage.columns || !stage.columns.length) {
+          stage.columns = defaultColumns.map((column) => ({ ...column }));
+        }
+      }
+
+      function toKey(label, existingKeys) {
+        const base = label
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "") || "column";
+        let key = base;
+        let index = 1;
+        while (existingKeys.has(key)) {
+          key = `${base}-${index}`;
+          index += 1;
+        }
+        return key;
+      }
+
+      function isDateColumn(column) {
+        return column.key.toLowerCase().includes("date") || column.label.toLowerCase().includes("date");
+      }
+
+      function isStatusColumn(column) {
+        return column.type === "status" || column.key.toLowerCase().includes("status");
+      }
+
+      function isNoteColumn(column) {
+        return column.type === "note" || column.key.toLowerCase().includes("note");
+      }
+
+      function isFileColumn(column) {
+        return column.type === "video" || column.type === "images" || column.type === "audio";
+      }
+
+      function isHistoryColumn(column) {
+        return column.type === "history" || column.key.toLowerCase().includes("history");
+      }
+
+      function isUpdateColumn(column) {
+        return column.type === "update" || column.key.toLowerCase().includes("update");
+      }
+
+      function isUpdateBoxColumn(column) {
+        return column.type === "update_box" || column.key.toLowerCase().includes("update_box");
+      }
+
+      function nextStatus(current) {
+        const normalized = (current || "start").toLowerCase();
+        const order = ["start", "in progress", "done", "rework"];
+        const index = Math.max(0, order.indexOf(normalized));
+        return order[(index + 1) % order.length];
+      }
+
+      function getFileConfig(column) {
+        if (column.type === "video") {
+          return { accept: "video/*", captureValue: "environment", multiple: true };
+        }
+        if (column.type === "images") {
+          return { accept: "image/*", captureValue: "environment", multiple: true };
+        }
+        if (column.type === "audio") {
+          return { accept: "audio/*", captureValue: "microphone", multiple: true };
+        }
+        return { accept: "", captureValue: "", multiple: false };
+      }
+
+      const ACTIVITY_STATUS_OPTIONS = [
+        "start",
+        "in progress",
+        "done",
+        "rework",
+      ];
+
+      const ACTIVITY_FIELD_LABELS = {
+        activity_status: "Status",
+        note: "Note",
+        date: "Date",
+        images: "Images",
+        video: "Video",
+        audio: "Voice",
+      };
+
+      const currentUser =
+        localStorage.getItem("username") ||
+        localStorage.getItem("user") ||
+        localStorage.getItem("email") ||
+        "Unknown user";
+
+      const createActivityId = () =>
+        `activity_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+
+      function ensureActivityId(activity) {
+        if (!activity.activity_id) {
+          activity.activity_id = createActivityId();
+        }
+      }
+
+      function recordActivityUpdate(activity, changes) {
+        if (!changes.length) return;
+        const entry = {
+          timestamp: new Date().toISOString(),
+          user: currentUser,
+          changes,
+        };
+        if (!Array.isArray(activity.history)) {
+          activity.history = [];
+        }
+        activity.history.push(entry);
+      }
+
+      function renderHistoryList(records) {
+        historyBody.innerHTML = "";
+        if (!records.length) {
+          const empty = document.createElement("p");
+          empty.className = "history-empty";
+          empty.textContent = "No history yet.";
+          historyBody.appendChild(empty);
+          return;
+        }
+        const ordered = [...records].sort((a, b) => {
+          const aTime = new Date(a.timestamp || a.created_at || 0).getTime();
+          const bTime = new Date(b.timestamp || b.created_at || 0).getTime();
+          return aTime - bTime;
+        });
+        let lastStatus = "start";
+        const enriched = ordered.map((record) => {
+          let statusLine = null;
+          let nextStatusValue = null;
+          const statusChange = Array.isArray(record.changes)
+            ? record.changes.find((change) => change.field === "activity_status")
+            : null;
+          if (statusChange) {
+            const oldValue =
+              statusChange.displayOld || statusChange.oldValue || lastStatus || "Not provided";
+            const newValue =
+              statusChange.displayNew || statusChange.newValue || "Not provided";
+            statusLine = oldValue !== newValue ? `${oldValue} -> ${newValue}` : newValue;
+            nextStatusValue = statusChange.newValue || statusChange.displayNew || lastStatus;
+          } else if (record.status != null) {
+            const oldValue = lastStatus;
+            const newValue = record.status;
+            statusLine = oldValue && oldValue !== newValue ? `${oldValue} -> ${newValue}` : newValue;
+            nextStatusValue = newValue;
+          }
+          if (nextStatusValue) {
+            lastStatus = nextStatusValue;
+          }
+          return { record, statusLine };
+        });
+        enriched
+          .slice()
+          .reverse()
+          .forEach(({ record, statusLine }) => {
+          const item = document.createElement("div");
+          item.className = "history-item";
+          const timestamp = new Date(
+            record.timestamp || record.created_at || Date.now()
+          ).toLocaleString();
+          if (Array.isArray(record.changes) && record.changes.length) {
+            const changesHtml = record.changes
+              .map((change) => {
+                const label = ACTIVITY_FIELD_LABELS[change.field] || change.field;
+                const rawOld = change.displayOld ?? change.oldValue;
+                const rawNew = change.displayNew ?? change.newValue;
+                const oldValue = rawOld == null || rawOld === "" ? null : rawOld;
+                const newValue = rawNew == null || rawNew === "" ? null : rawNew;
+                if (!oldValue && !newValue) return "";
+                if (change.field === "activity_status" && oldValue === newValue) {
+                  return `<p>${label}: ${newValue}</p>`;
+                }
+                if (!oldValue) {
+                  return `<p>${label}: ${newValue}</p>`;
+                }
+                if (!newValue) {
+                  return `<p>${label}: ${oldValue}</p>`;
+                }
+                return `<p>${label}: ${oldValue} -> ${newValue}</p>`;
+              })
+              .filter(Boolean)
+              .join("");
+            item.innerHTML = `
+              <strong>Update</strong>
+              ${changesHtml}
+              <div class="history-meta">Updated by ${
+                record.user || record.updated_by || "Unknown"
+              } - ${timestamp}</div>
+            `;
+            historyBody.appendChild(item);
+            return;
+          }
+
+          const status = statusLine || record.status || null;
+          const note = record.note ? record.note : null;
+          const images = Array.isArray(record.image_urls) ? record.image_urls : [];
+          const videos = Array.isArray(record.video_urls) ? record.video_urls : [];
+          const audios = Array.isArray(record.audio_urls) ? record.audio_urls : [];
+          const imagesHtml = images.length
+            ? images
+                .map(
+                  (url, index) =>
+                    `<figure style="margin:6px 0;">
+                      <img src="${url}" alt="Update image ${index + 1}" style="max-width:100%; border-radius:12px; border:1px solid var(--line);" />
+                    </figure>`
+                )
+                .join("")
+            : "";
+          const videosHtml = videos.length
+            ? videos
+                .map(
+                  (url, index) =>
+                    `<video controls style="width:100%; border-radius:12px; border:1px solid var(--line); margin-top:6px;">
+                      <source src="${url}" />
+                      Video ${index + 1}
+                    </video>`
+                )
+                .join("")
+            : "";
+          const audiosHtml = audios.length
+            ? audios
+                .map(
+                  (url, index) =>
+                    `<audio controls style="width:100%; margin-top:6px;">
+                      <source src="${url}" />
+                      Voice ${index + 1}
+                    </audio>`
+                )
+                .join("")
+            : "";
+
+          item.innerHTML = `
+            <strong>Update</strong>
+            ${status ? `<p>Status: ${status}</p>` : ""}
+            ${note ? `<p>Note: ${note}</p>` : ""}
+            ${imagesHtml ? `<p>Images:</p>${imagesHtml}` : ""}
+            ${videosHtml ? `<p>Video:</p>${videosHtml}` : ""}
+            ${audiosHtml ? `<p>Voice:</p>${audiosHtml}` : ""}
+            <div class="history-meta">Updated by ${
+              record.updated_by || record.user || "Unknown"
+            } - ${timestamp}</div>
+          `;
+          historyBody.appendChild(item);
+        });
+      }
+
+      async function openHistoryPanel(activity) {
+        ensureActivityId(activity);
+        historyBody.innerHTML = `<p class="history-empty">Loading history...</p>`;
+        try {
+          const response = await fetch(UPDATE_HISTORY_ENDPOINT(activity.activity_id));
+          if (response.ok) {
+            const data = await response.json();
+            if (data.history && data.history.length) {
+              renderHistoryList(data.history);
+            } else {
+              renderHistoryList(activity.history || []);
+            }
+          } else {
+            renderHistoryList(activity.history || []);
+          }
+        } catch (error) {
+          console.error(error);
+          renderHistoryList(activity.history || []);
+        }
+        historyOverlay.classList.add("visible");
+      }
+
+      let activeUpdateActivity = null;
+
+      function openUpdatePanel(activity) {
+        ensureActivityId(activity);
+        activeUpdateActivity = activity;
+        updateStatusSelect.value = activity.activity_status || "start";
+        updateNoteInput.value = activity.note || "";
+        updateImagesInput.value = "";
+        updateVideoInput.value = "";
+        updateAudioInput.value = "";
+        // Reset accumulated files when opening panel
+        accumulatedFiles = {
+          images: [],
+          video: [],
+          audio: []
+        };
+        // Clear file count displays
+        const imagesMeta = document.getElementById("update-images-meta");
+        const videoMeta = document.getElementById("update-video-meta");
+        const audioMeta = document.getElementById("update-audio-meta");
+        if (imagesMeta) imagesMeta.textContent = "";
+        if (videoMeta) videoMeta.textContent = "";
+        if (audioMeta) audioMeta.textContent = "";
+        updateOverlay.classList.add("visible");
+      }
+
+      function closeUpdatePanel() {
+        updateOverlay.classList.remove("visible");
+        activeUpdateActivity = null;
+        // Clear accumulated files when closing
+        accumulatedFiles = {
+          images: [],
+          video: [],
+          audio: []
+        };
+      }
+
+      async function uploadUpdateFile(file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        const response = await fetch(UPDATE_UPLOAD_ENDPOINT, {
+          method: "POST",
+          body: formData,
+        });
+        if (!response.ok) {
+          throw new Error(`Upload failed (${response.status})`);
+        }
+        const data = await response.json();
+        return data.image_url || data.file_url || data.fileUrl || "";
+      }
+
+      async function saveUpdateFromModal() {
+        if (!activeUpdateActivity) return;
+        updateSaveBtn.disabled = true;
+        const updates = {
+          activity_status: updateStatusSelect.value,
+          note: updateNoteInput.value.trim(),
+        };
+        // Use accumulated files instead of input files
+        const imageFiles = accumulatedFiles.images;
+        const videoFiles = accumulatedFiles.video;
+        const audioFiles = accumulatedFiles.audio;
+        console.log('Files to upload:', { images: imageFiles.length, videos: videoFiles.length, audios: audioFiles.length });
+        try {
+          const imageUrls = await Promise.all(imageFiles.map(uploadUpdateFile));
+          const videoUrls = await Promise.all(videoFiles.map(uploadUpdateFile));
+          const audioUrls = await Promise.all(audioFiles.map(uploadUpdateFile));
+          updates.images = imageUrls.filter(Boolean);
+          updates.video = videoUrls.filter(Boolean);
+          updates.audio = audioUrls.filter(Boolean);
+          console.log('Uploaded files:', { images: updates.images, videos: updates.video, audios: updates.audio });
+        } catch (error) {
+          console.error('Upload error:', error);
+          showToast("Upload failed: " + error.message);
+          updateSaveBtn.disabled = false;
+          return;
+        }
+
+        const changes = [];
+        Object.entries(updates).forEach(([field, newValue]) => {
+          if (!ACTIVITY_FIELD_LABELS[field]) return;
+          const oldValue = activeUpdateActivity[field] || "";
+          if (newValue !== "") {
+            activeUpdateActivity[field] = newValue;
+          }
+          changes.push({
+            field,
+            oldValue,
+            newValue,
+            displayOld: oldValue || "Not provided",
+            displayNew: newValue || "Not provided",
+          });
+        });
+
+        try {
+          const response = await fetch(UPDATE_CREATE_ENDPOINT(activeUpdateActivity.activity_id), {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              status: updates.activity_status,
+              note: updates.note,
+              image_urls: updates.images || [],
+              video_urls: updates.video || [],
+              audio_urls: updates.audio || [],
+              updated_by: currentUser,
+            }),
+          });
+          if (!response.ok) {
+            throw new Error(`Failed to save update (${response.status})`);
+          }
+          const data = await response.json();
+          if (!Array.isArray(activeUpdateActivity.history)) {
+            activeUpdateActivity.history = [];
+          }
+          activeUpdateActivity.history.push(data);
+        } catch (error) {
+          console.error(error);
+          recordActivityUpdate(activeUpdateActivity, changes);
+          showToast("Unable to save update.");
+        } finally {
+          updateSaveBtn.disabled = false;
+        }
+
+        markLocalChanges();
+        closeUpdatePanel();
+        renderStages();
+      }
+
+      let confirmAction = null;
+
+      function openConfirmModal(action) {
+        confirmAction = action;
+        confirmOverlay.classList.add("visible");
+      }
+
+      function closeConfirmModal() {
+        confirmOverlay.classList.remove("visible");
+        confirmAction = null;
+      }
+
+      function getActivityCard(stageIndex, activityIndex) {
+        return document.querySelector(
+          `.activity-card[data-stage="${stageIndex}"][data-row="${activityIndex}"]`
+        );
+      }
+
+      async function submitActivityUpdate(stageIndex, activityIndex) {
+        const activity = stagesState[stageIndex]?.activities?.[activityIndex];
+        if (!activity) return;
+        const card = getActivityCard(stageIndex, activityIndex);
+        if (!card) return;
+
+        const noteInput = card.querySelector('textarea[data-key="note"]');
+        const imagesInput = card.querySelector('input[type="file"][data-key="images"]');
+        const videoInput = card.querySelector('input[type="file"][data-key="video"]');
+        const audioInput = card.querySelector('input[type="file"][data-key="audio"]');
+
+        const note = noteInput ? noteInput.value.trim() : "";
+        const imageFiles = imagesInput?.files ? Array.from(imagesInput.files) : [];
+        const videoFiles = videoInput?.files ? Array.from(videoInput.files) : [];
+        const audioFiles = audioInput?.files ? Array.from(audioInput.files) : [];
+
+        console.log('Files to upload:', { images: imageFiles.length, videos: videoFiles.length, audios: audioFiles.length });
+
+        const currentStatus = (activity.activity_status || "start").toLowerCase();
+        const nextStatusValue = currentStatus === "start" ? "in progress" : currentStatus;
+        const updates = {
+          activity_status: nextStatusValue,
+          note,
+        };
+
+        try {
+          const imageUrls = await Promise.all(imageFiles.map(uploadUpdateFile));
+          const videoUrls = await Promise.all(videoFiles.map(uploadUpdateFile));
+          const audioUrls = await Promise.all(audioFiles.map(uploadUpdateFile));
+          updates.images = imageUrls.filter(Boolean);
+          updates.video = videoUrls.filter(Boolean);
+          updates.audio = audioUrls.filter(Boolean);
+          console.log('Uploaded files:', { images: updates.images, videos: updates.video, audios: updates.audio });
+        } catch (error) {
+          console.error('Upload error:', error);
+          showToast("Upload failed: " + error.message);
+          return;
+        }
+
+        const changes = [];
+        Object.entries(updates).forEach(([field, newValue]) => {
+          if (!ACTIVITY_FIELD_LABELS[field]) return;
+          const oldValue = activity[field] || "";
+          if (newValue !== "") {
+            activity[field] = newValue;
+          }
+          changes.push({
+            field,
+            oldValue,
+            newValue,
+            displayOld: oldValue || "Not provided",
+            displayNew: newValue || "Not provided",
+          });
+        });
+
+        try {
+          const response = await fetch(UPDATE_CREATE_ENDPOINT(activity.activity_id), {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              status: updates.activity_status,
+              note: updates.note,
+              image_urls: updates.images || [],
+              video_urls: updates.video || [],
+              audio_urls: updates.audio || [],
+              updated_by: currentUser,
+            }),
+          });
+          if (!response.ok) {
+            throw new Error(`Failed to save update (${response.status})`);
+          }
+          const data = await response.json();
+          if (!Array.isArray(activity.history)) {
+            activity.history = [];
+          }
+          activity.history.push(data);
+        } catch (error) {
+          console.error(error);
+          recordActivityUpdate(activity, changes);
+          showToast("Unable to save update.");
+        }
+
+        markLocalChanges();
+        renderStages();
+      }
+
+      async function submitStatusUpdate(activity, newStatus) {
+        if (!activity) return;
+        ensureActivityId(activity);
+        
+        // Update UI immediately
+        activity.activity_status = newStatus;
+        
+        const changes = [
+          {
+            field: "activity_status",
+            oldValue: activity.activity_status || "start",
+            newValue: newStatus,
+            displayOld: activity.activity_status || "start",
+            displayNew: newStatus,
+          },
+        ];
+        
+        try {
+          const response = await fetch(UPDATE_CREATE_ENDPOINT(activity.activity_id), {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              status: newStatus,
+              note: "",
+              image_urls: [],
+              video_urls: [],
+              audio_urls: [],
+              updated_by: currentUser,
+            }),
+          });
+          if (!response.ok) {
+            throw new Error(`Failed to save update (${response.status})`);
+          }
+          const data = await response.json();
+          if (!Array.isArray(activity.history)) {
+            activity.history = [];
+          }
+          activity.history.push(data);
+          showToast("Status updated successfully!");
+        } catch (error) {
+          console.error(error);
+          recordActivityUpdate(activity, changes);
+          showToast("Status update saved locally (may retry later).");
+        }
+        
+        // Always mark changes to persist
+        markLocalChanges();
+        renderStages();
+      }
+
+      function createStageCard(stage, stageIndex) {
+        ensureColumns(stage);
+        const card = document.createElement("div");
+        card.className = "stage-card";
+
+        const header = document.createElement("div");
+        header.className = "stage-header";
+
+        const title = document.createElement("div");
+        title.className = "stage-title";
+        title.innerHTML = `
+          <h3>${stage.name}</h3>
+          <span>Target: ${stage.target || "TBD"}</span>
+        `;
+
+        header.appendChild(title);
+        header.appendChild(document.createElement("div"));
+
+        const activityList = document.createElement("div");
+        activityList.className = "activity-list";
+        activityList.innerHTML = stage.activities
+          .map((activity, activityIndex) => {
+            ensureActivityId(activity);
+            return `
+              <div class="activity-card" data-stage="${stageIndex}" data-row="${activityIndex}">
+                <div class="activity-top">
+                  <div class="activity-field">
+                    <label>Date</label>
+                    <input
+                      type="date"
+                      value="${activity.date || ""}"
+                      data-stage="${stageIndex}"
+                      data-row="${activityIndex}"
+                      data-key="date"
+                      readonly
+                    />
+                  </div>
+                  <div class="activity-field">
+                    <label>Activity</label>
+                    <span class="activity-name">${activity.activity || activity.item || ""}</span>
+                  </div>
+                  <div class="activity-field">
+                    <label>Status</label>
+                    <button
+                      class="activity-status status-${(activity.activity_status || "start").toLowerCase().replace(" ", "-")}"
+                      type="button"
+                      data-stage="${stageIndex}"
+                      data-row="${activityIndex}"
+                      data-key="activity_status"
+                      data-action="status"
+                    >
+                      ${(activity.activity_status || "start").toLowerCase()}
+                    </button>
+                  </div>
+                </div>
+                <div class="update-box">
+                  <div>
+                    <label>Note</label>
+                    <textarea
+                      placeholder="Note"
+                      data-stage="${stageIndex}"
+                      data-row="${activityIndex}"
+                      data-key="note"
+                    >${activity.note || ""}</textarea>
+                  </div>
+                  <div>
+                    <label>Image</label>
+                    <div class="file-input">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        data-stage="${stageIndex}"
+                        data-row="${activityIndex}"
+                        data-key="images"
+                      />
+                      <div class="file-actions">
+                        <button class="file-action-btn" type="button" data-file-action="capture" data-capture-value="environment">Take</button>
+                        <button class="file-action-btn" type="button" data-file-action="upload">Upload</button>
+                      </div>
+                    </div>
+                    <div class="file-meta" data-meta="images">${activity.images ? `Selected: ${activity.images}` : "No image selected"}</div>
+                  </div>
+                  <div>
+                    <label>Video</label>
+                    <div class="file-input">
+                      <input
+                        type="file"
+                        accept="video/*"
+                        data-stage="${stageIndex}"
+                        data-row="${activityIndex}"
+                        data-key="video"
+                      />
+                      <div class="file-actions">
+                        <button class="file-action-btn" type="button" data-file-action="capture" data-capture-value="environment">Record</button>
+                        <button class="file-action-btn" type="button" data-file-action="upload">Upload</button>
+                      </div>
+                    </div>
+                    <div class="file-meta" data-meta="video">${activity.video ? `Selected: ${activity.video}` : "No video selected"}</div>
+                  </div>
+                  <div>
+                    <label>Voice</label>
+                    <div class="file-input">
+                      <input
+                        type="file"
+                        accept="audio/*"
+                        data-stage="${stageIndex}"
+                        data-row="${activityIndex}"
+                        data-key="audio"
+                      />
+                      <div class="file-actions">
+                        <button class="file-action-btn" type="button" data-file-action="capture" data-capture-value="microphone">Record</button>
+                        <button class="file-action-btn" type="button" data-file-action="upload">Upload</button>
+                      </div>
+                    </div>
+                    <div class="file-meta" data-meta="audio">${activity.audio ? `Selected: ${activity.audio}` : "No audio selected"}</div>
+                  </div>
+                </div>
+                <div class="activity-footer">
+                  <button
+                    class="history-btn"
+                    type="button"
+                    data-stage="${stageIndex}"
+                    data-row="${activityIndex}"
+                    data-action="update"
+                  >
+                    Update
+                  </button>
+                  <button
+                    class="history-btn"
+                    type="button"
+                    data-stage="${stageIndex}"
+                    data-row="${activityIndex}"
+                    data-action="history"
+                  >
+                    View History
+                  </button>
+                </div>
+              </div>
+            `;
+          })
+          .join("");
+
+        const activityForm = document.createElement("form");
+        activityForm.className = "activity-form";
+        activityForm.innerHTML = `
+          ${stage.columns
+            .map((column) => {
+              if (isStatusColumn(column)) {
+                return `
+                  <select class="mini-select" name="${column.key}">
+                    ${ACTIVITY_STATUS_OPTIONS.map(
+                      (option) => `<option value="${option}">${option}</option>`
+                    ).join("")}
+                  </select>
+                `;
+              }
+              if (isUpdateBoxColumn(column)) {
+                return `
+                  <div class="update-box">
+                    <div>
+                      <label>Note</label>
+                      <textarea name="note" placeholder="Note"></textarea>
+                    </div>
+                    <div>
+                      <label>Image</label>
+                      <div class="file-input">
+                        <input type="file" name="images" accept="image/*" multiple />
+                        <div class="file-actions">
+                          <button class="file-action-btn" type="button" data-file-action="capture" data-capture-value="environment">Take</button>
+                          <button class="file-action-btn" type="button" data-file-action="upload">Upload</button>
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <label>Video</label>
+                      <div class="file-input">
+                        <input type="file" name="video" accept="video/*" />
+                        <div class="file-actions">
+                          <button class="file-action-btn" type="button" data-file-action="capture" data-capture-value="environment">Record</button>
+                          <button class="file-action-btn" type="button" data-file-action="upload">Upload</button>
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <label>Voice</label>
+                      <div class="file-input">
+                        <input type="file" name="audio" accept="audio/*" />
+                        <div class="file-actions">
+                          <button class="file-action-btn" type="button" data-file-action="capture" data-capture-value="microphone">Record</button>
+                          <button class="file-action-btn" type="button" data-file-action="upload">Upload</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                `;
+              }
+              if (isHistoryColumn(column) || isUpdateColumn(column)) {
+                return "";
+              }
+              if (isFileColumn(column)) {
+                const fileConfig = getFileConfig(column);
+                return `
+                  <div class="file-input">
+                    <input
+                      type="file"
+                      name="${column.key}"
+                      accept="${fileConfig.accept}"
+                      ${fileConfig.multiple ? "multiple" : ""}
+                    />
+                    <div class="file-actions">
+                      <button
+                        class="file-action-btn"
+                        type="button"
+                        data-file-action="capture"
+                        data-capture-value="${fileConfig.captureValue}"
+                      >
+                        ${fileConfig.captureValue === "microphone" ? "Record" : "Take"}
+                      </button>
+                      <button class="file-action-btn" type="button" data-file-action="upload">Upload</button>
+                    </div>
+                  </div>
+                `;
+              }
+              if (isNoteColumn(column)) {
+                return `<textarea name="${column.key}" placeholder="${column.label}" required></textarea>`;
+              }
+              const type = isDateColumn(column) ? "date" : "text";
+              return `<input type="${type}" name="${column.key}" placeholder="${column.label}" required />`;
+            })
+            .join("")}
+          <div class="activity-actions">
+            <button class="btn" type="submit">Save Activity</button>
+            <button class="btn btn-secondary" type="button">Cancel</button>
+          </div>
+        `;
+
+        const cancelBtn = activityForm.querySelector("button[type='button']");
+        cancelBtn.addEventListener("click", () => {
+          activityForm.classList.remove("visible");
+          activityForm.reset();
+        });
+
+        activityForm.addEventListener("submit", (event) => {
+          event.preventDefault();
+          const formData = new FormData(activityForm);
+          const activity = {};
+          stage.columns.forEach((column) => {
+            if (isStatusColumn(column)) {
+              activity[column.key] = formData.get(column.key) || "start";
+              return;
+            }
+            if (isUpdateBoxColumn(column)) {
+              return;
+            }
+            if (isHistoryColumn(column) || isUpdateColumn(column)) {
+              return;
+            }
+            if (isFileColumn(column)) {
+              const input = activityForm.querySelector(`[name="${column.key}"]`);
+              const files = input && input.files ? Array.from(input.files) : [];
+              activity[column.key] = files.map((file) => file.name).join(", ");
+              return;
+            }
+            if (isNoteColumn(column)) {
+              activity[column.key] = (formData.get(column.key) || "").toString();
+              return;
+            }
+            activity[column.key] = formData.get(column.key) || "";
+          });
+          activity.note = (formData.get("note") || "").toString();
+          const imageFiles = activityForm.querySelector('[name="images"]');
+          const videoFiles = activityForm.querySelector('[name="video"]');
+          const audioFiles = activityForm.querySelector('[name="audio"]');
+          activity.images = imageFiles && imageFiles.files
+            ? Array.from(imageFiles.files).map((file) => file.name).join(", ")
+            : "";
+          activity.video = videoFiles && videoFiles.files
+            ? Array.from(videoFiles.files).map((file) => file.name).join(", ")
+            : "";
+          activity.audio = audioFiles && audioFiles.files
+            ? Array.from(audioFiles.files).map((file) => file.name).join(", ")
+            : "";
+          ensureActivityId(activity);
+          stage.activities.push(activity);
+          activityForm.classList.remove("visible");
+          activityForm.reset();
+          renderStages();
+        });
+
+        activityList.addEventListener("input", (event) => {
+          const target = event.target;
+          if (target.tagName !== "INPUT" && target.tagName !== "TEXTAREA") return;
+          if (target.tagName === "INPUT" && target.type === "file") return;
+          const rowIndex = Number(target.dataset.row);
+          const key = target.dataset.key;
+          if (!Number.isNaN(rowIndex) && key) {
+            stage.activities[rowIndex][key] = target.value;
+            markLocalChanges();
+          }
+        });
+
+        activityList.addEventListener("change", (event) => {
+          const target = event.target;
+          if (target.tagName === "SELECT") {
+            const rowIndex = Number(target.dataset.row);
+            const key = target.dataset.key;
+            if (Number.isNaN(rowIndex) || !key) return;
+            stage.activities[rowIndex][key] = target.value;
+            markLocalChanges();
+            return;
+          }
+          if (target.tagName !== "INPUT") return;
+          if (target.type !== "file") return;
+          const rowIndex = Number(target.dataset.row);
+          const key = target.dataset.key;
+          if (Number.isNaN(rowIndex) || !key) return;
+          const files = target.files ? Array.from(target.files) : [];
+          const count = files.length;
+          const names = files.map((file) => file.name).join(", ");
+          stage.activities[rowIndex][key] = names;
+          const card = target.closest(".activity-card");
+          const meta = card ? card.querySelector(`[data-meta="${key}"]`) : null;
+          if (meta) {
+            if (count === 0) {
+              meta.textContent = `No ${key} selected`;
+            } else if (count === 1) {
+              meta.textContent = `Selected: ${names}`;
+            } else {
+              meta.textContent = `Selected ${count} files: ${names}`;
+            }
+          }
+          markLocalChanges();
+        });
+
+        activityList.addEventListener("click", (event) => {
+          const target = event.target;
+          if (!(target instanceof HTMLElement)) return;
+          if (target.tagName !== "BUTTON") return;
+          if (target.dataset.action === "status") {
+            const rowIndex = Number(target.dataset.row);
+            const key = target.dataset.key;
+            if (Number.isNaN(rowIndex) || !key) return;
+            const activity = stage.activities[rowIndex];
+            const next = nextStatus(activity[key]);
+            submitStatusUpdate(activity, next);
+            return;
+          }
+          if (target.dataset.action === "update") {
+            const rowIndex = Number(target.dataset.row);
+            if (Number.isNaN(rowIndex)) return;
+            openConfirmModal(() => submitActivityUpdate(stageIndex, rowIndex));
+            return;
+          }
+          if (target.dataset.action === "history") {
+            const rowIndex = Number(target.dataset.row);
+            if (Number.isNaN(rowIndex)) return;
+            openHistoryPanel(stage.activities[rowIndex]);
+            return;
+          }
+          if (target.classList.contains("add-column-btn")) {
+            const label = window.prompt("Column name");
+            if (!label) return;
+            const trimmed = label.trim();
+            if (!trimmed) return;
+            const existingKeys = new Set(stage.columns.map((column) => column.key));
+            const key = toKey(trimmed, existingKeys);
+            stage.columns.push({ key, label: trimmed });
+            stage.activities.forEach((activity) => {
+              activity[key] = "";
+            });
+            renderStages();
+            return;
+          }
+          const rowIndex = Number(target.dataset.row);
+          if (!Number.isNaN(rowIndex)) {
+            const confirmed = window.confirm("Delete this activity?");
+            if (!confirmed) return;
+            stage.activities.splice(rowIndex, 1);
+            renderStages();
+          }
+        });
+
+        const stageFooter = document.createElement("div");
+        stageFooter.className = "stage-footer";
+
+        const footerLeft = document.createElement("div");
+        footerLeft.className = "stage-footer-left";
+
+        const addActivityBtn = document.createElement("button");
+        addActivityBtn.className = "btn btn-secondary";
+        addActivityBtn.type = "button";
+        addActivityBtn.textContent = "Add Activity";
+
+        addActivityBtn.addEventListener("click", () => {
+          activityForm.classList.toggle("visible");
+        });
+
+        footerLeft.appendChild(addActivityBtn);
+        const deleteStageBtn = document.createElement("button");
+        deleteStageBtn.className = "btn btn-danger";
+        deleteStageBtn.type = "button";
+        deleteStageBtn.textContent = "Delete Stage";
+
+        deleteStageBtn.addEventListener("click", () => {
+          stagesState.splice(stageIndex, 1);
+          renderStages();
+        });
+
+        stageFooter.appendChild(footerLeft);
+        stageFooter.appendChild(deleteStageBtn);
+
+        card.appendChild(header);
+        card.appendChild(activityList);
+        card.appendChild(activityForm);
+        card.appendChild(stageFooter);
+        return card;
+      }
+
+      function renderStages() {
+        console.log("renderStages called with stagesState:", stagesState.length, "stages");
+        stagesContainer.innerHTML = "";
+        stagesState.forEach((stage, index) => {
+          console.log(`Rendering stage ${index}:`, stage.name, "with", (stage.activities || []).length, "activities");
+          stagesContainer.appendChild(createStageCard(stage, index));
+        });
+      }
+
+      const setPlanStatus = (status, reviewNote, rejectionReason) => {
+        currentPlanStatus = status || "draft";
+      };
+
+      const showToast = (message) => {
+        if (!toastContainer) return;
+        const toast = document.createElement("div");
+        toast.className = "toast";
+        toast.textContent = message;
+        toastContainer.appendChild(toast);
+        requestAnimationFrame(() => {
+          toast.classList.add("show");
+        });
+        setTimeout(() => {
+          toast.classList.remove("show");
+          setTimeout(() => {
+            toast.remove();
+          }, 200);
+        }, 2000);
+      };
+
+      const buildPlanPayload = () => ({
+        orderId,
+        reviewNotes: reviewNotes?.value?.trim() || "",
+        stages: stagesState.map(stage => ({
+          ...stage,
+          activities: (stage.activities || []).map(activity => {
+            // Ensure each activity has required fields
+            return {
+              ...activity,
+              activity_id: activity.activity_id || createActivityId(),
+              activity_status: activity.activity_status || 'start',
+              date: activity.date || new Date().toISOString().split('T')[0],
+              history: activity.history || []
+            };
+          })
+        }))
+      });
+
+      const applyPlanPayload = (plan) => {
+        if (!plan) return;
+        if (plan.reviewNotes && reviewNotes) reviewNotes.value = plan.reviewNotes;
+        if (Array.isArray(plan.stages) && plan.stages.length) {
+          console.log("Applying stages from plan:", plan.stages.length, "stages");
+          const loadedStages = plan.stages.map(stage => ({
+            ...stage,
+            activities: (stage.activities || []).map(activity => {
+              // IMPORTANT: Only generate activity_id if it doesn't exist
+              // Preserve existing IDs so history queries work
+              if (!activity.activity_id) {
+                activity.activity_id = createActivityId();
+                console.log("Generated new activity_id for", activity.activity + ":", activity.activity_id);
+              }
+              return {
+                ...activity,
+                activity_status: activity.activity_status || 'start',
+                date: activity.date || new Date().toISOString().split('T')[0],
+                note: activity.note || '',
+                images: activity.images || '',
+                video: activity.video || '',
+                audio: activity.audio || '',
+                history: activity.history || []
+              };
+            })
+          }));
+          stagesState = cloneStages(loadedStages);
+          console.log("Stages applied to stagesState:", stagesState.length, "stages");
+        }
+      };
+
+      const requireAuth = () => {
+        if (!token) {
+          const redirect = encodeURIComponent(
+            `${window.location.pathname}${window.location.search}${window.location.hash || ""}`
+          );
+          window.location.href = `${APP_BASE}/login?redirect=${redirect}`;
+          return false;
+        }
+        return true;
+      };
+
+      // Auto-save plan when changes are made
+      let autoSaveTimeout;
+      const scheduleAutoSave = () => {
+        if (autoSaveTimeout) {
+          clearTimeout(autoSaveTimeout);
+        }
+        // Save after 2 seconds of inactivity
+        autoSaveTimeout = setTimeout(() => {
+          if (hasLocalChanges && orderId) {
+            savePlan();
+          }
+        }, 2000);
+      };
+
+      const savePlan = async () => {
+        if (!orderId) return false;
+        if (!requireAuth()) return false;
+        
+        try {
+          const payload = buildPlanPayload();
+          const response = await fetch(`${API_BASE}/data/orders/${orderId}/plan`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ plan: payload }),
+          });
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            const errorMsg = errorData.message || "";
+            
+            // If backend says plan is locked, treat as success (expected for approved plans)
+            if (errorMsg.includes("locked") || errorMsg.includes("pending review")) {
+              console.log("savePlan: Plan is locked (approved/pending), changes saved locally");
+              hasLocalChanges = false;
+              return true;
+            }
+            
+            throw new Error(errorMsg || `Failed to save plan (${response.status})`);
+          }
+          const data = await response.json();
+          setPlanStatus(data.status || "draft");
+          hasLocalChanges = false;
+          console.log("savePlan: Plan saved successfully, status:", data.status);
+          return true;
+        } catch (error) {
+          console.error("savePlan error:", error);
+          return false;
+        }
+      };
+
+      const submitPlan = async () => {
+        if (!orderId) return;
+        if (!requireAuth()) return;
+        try {
+          // Save plan first if there are unsaved changes
+          if (hasLocalChanges) {
+            const saved = await savePlan();
+            if (!saved) {
+              showToast("Please save the plan first before submitting.");
+              return;
+            }
+          }
+          
+          const response = await fetch(`${API_BASE}/data/orders/${orderId}/plan/submit`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || "Failed to submit plan");
+          }
+          const data = await response.json();
+          setPlanStatus(data.status || "submitted");
+          showToast("Saved and submitted successfully!");
+          setTimeout(() => {
+            window.location.href = "/orders";
+          }, 800);
+        } catch (error) {
+          console.error(error);
+          showToast(`Error: ${error.message || "Unable to submit update"}`);
+        }
+      };
+
+      const saveAndSubmitPlan = async () => {
+        const saved = await savePlan();
+        if (!saved) return;
+        await submitPlan();
+      };
+
+      const loadPlan = async () => {
+        if (!orderId) {
+          console.log("No orderId provided, using defaults");
+          renderStages();
+          return;
+        }
+        if (!requireAuth()) {
+          console.log("Not authenticated");
+          return;
+        }
+        try {
+          console.log("LoadPlan: Fetching plan for order", orderId);
+          const response = await fetch(`${API_BASE}/data/orders/${orderId}/plan`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          console.log("LoadPlan: Response status", response.status);
+          
+          if (!response.ok) {
+            if (response.status === 404) {
+              // No plan saved yet, use defaults
+              console.log("LoadPlan: No saved plan found (404), using defaults");
+              renderStages();
+              return;
+            }
+            throw new Error(`Failed to fetch plan (${response.status})`);
+          }
+          const data = await response.json();
+          console.log("LoadPlan: Received data", data);
+          
+          // Apply the loaded plan data
+          if (data.plan) {
+            console.log("LoadPlan: Applying saved plan");
+            applyPlanPayload(data.plan);
+          } else {
+            // No plan data, use defaults
+            console.log("LoadPlan: No plan in response, using defaults");
+            stagesState = cloneStages(defaultStages);
+          }
+          
+          console.log("LoadPlan: Rendering stages");
+          renderStages();
+          
+          // Load history for all activities
+          console.log("LoadPlan: Loading activity histories");
+          await loadActivityHistories();
+          
+          // Re-render after loading histories to show updated statuses
+          console.log("LoadPlan: Re-rendering after loading histories");
+          renderStages();
+          
+          // Set the plan status
+          if (data.status) {
+            console.log("LoadPlan: Setting plan status to", data.status);
+            setPlanStatus(data.status, data.review_note, data.rejection_reason);
+          }
+          
+          // Mark that we've loaded saved data - no unsaved changes yet
+          hasLocalChanges = false;
+          
+          // IMPORTANT: Save immediately to persist any newly generated activity_ids
+          console.log("LoadPlan: Saving plan to persist activity IDs");
+          await savePlan();
+          
+          console.log("LoadPlan: Complete!");
+        } catch (error) {
+          console.error("Load plan error:", error);
+          // On error, use default stages but still show them
+          stagesState = cloneStages(defaultStages);
+          renderStages();
+          showToast("Warning: Could not load saved data. Using defaults.");
+        }
+      };
+
+      const loadActivityHistories = async () => {
+        // Load history for each activity
+        for (const stage of stagesState) {
+          for (const activity of (stage.activities || [])) {
+            if (!activity.activity_id) {
+              console.log("Activity missing activity_id:", activity.activity);
+              continue;
+            }
+            try {
+              console.log("Loading history for activity:", activity.activity_id);
+              const response = await fetch(UPDATE_HISTORY_ENDPOINT(activity.activity_id));
+              if (response.ok) {
+                const data = await response.json();
+                console.log("History response for", activity.activity_id, ":", data);
+                if (data.history && data.history.length > 0) {
+                  activity.history = data.history;
+                  console.log("Loaded", data.history.length, "history entries for", activity.activity);
+                  // Use the latest history entry to update activity status
+                  const latestEntry = data.history[data.history.length - 1];
+                  if (latestEntry.status) {
+                    activity.activity_status = latestEntry.status;
+                  }
+                }
+              } else {
+                console.log("History fetch failed with status:", response.status, "for", activity.activity_id);
+              }
+            } catch (error) {
+              console.error("History load error for", activity.activity_id, ":", error);
+            }
+          }
+        }
+      };
+
+      if (addStageToggle) {
+        addStageToggle.addEventListener("click", () => {
+          stageForm.scrollIntoView({ behavior: "smooth" });
+          document.getElementById("stage-name").focus();
+        });
+      }
+
+      if (stageForm) {
+        stageForm.addEventListener("submit", (event) => {
+          event.preventDefault();
+          const stage = {
+            name: document.getElementById("stage-name")?.value?.trim() || "New Stage",
+            target: document.getElementById("stage-target")?.value || "",
+            columns: defaultColumns.map((column) => ({ ...column })),
+            activities: [],
+            reviewDate: "",
+            status: "todo",
+          };
+          if (!stage.name || stage.name === "New Stage") return;
+          stagesState.push(stage);
+          renderStages();
+          stageForm.reset();
+        });
+      }
+
+      historyCloseBtn.addEventListener("click", () => {
+        historyOverlay.classList.remove("visible");
+      });
+
+      historyOverlay.addEventListener("click", (event) => {
+        if (event.target === historyOverlay) {
+          historyOverlay.classList.remove("visible");
+        }
+      });
+
+      updateCloseBtn.addEventListener("click", closeUpdatePanel);
+      updateCancelBtn.addEventListener("click", closeUpdatePanel);
+      updateSaveBtn.addEventListener("click", saveUpdateFromModal);
+      
+      // Add file accumulation for modal inputs
+      updateImagesInput.addEventListener("change", (event) => {
+        const newFiles = event.target.files ? Array.from(event.target.files) : [];
+        if (newFiles.length > 0) {
+          // Add new files to accumulated files
+          accumulatedFiles.images.push(...newFiles);
+          const totalCount = accumulatedFiles.images.length;
+          const meta = document.getElementById("update-images-meta");
+          if (meta) {
+            if (totalCount === 0) {
+              meta.textContent = "";
+            } else if (totalCount === 1) {
+              meta.textContent = `Selected: ${accumulatedFiles.images[0].name}`;
+            } else {
+              const names = accumulatedFiles.images.map(f => f.name).join(", ");
+              meta.textContent = `Selected ${totalCount} files: ${names}`;
+            }
+          }
+        }
+        // Clear the input so the same file can be selected again
+        event.target.value = "";
+      });
+      
+      updateVideoInput.addEventListener("change", (event) => {
+        const newFiles = event.target.files ? Array.from(event.target.files) : [];
+        if (newFiles.length > 0) {
+          // Add new files to accumulated files
+          accumulatedFiles.video.push(...newFiles);
+          const totalCount = accumulatedFiles.video.length;
+          const meta = document.getElementById("update-video-meta");
+          if (meta) {
+            if (totalCount === 0) {
+              meta.textContent = "";
+            } else if (totalCount === 1) {
+              meta.textContent = `Selected: ${accumulatedFiles.video[0].name}`;
+            } else {
+              const names = accumulatedFiles.video.map(f => f.name).join(", ");
+              meta.textContent = `Selected ${totalCount} files: ${names}`;
+            }
+          }
+        }
+        // Clear the input so the same file can be selected again
+        event.target.value = "";
+      });
+      
+      updateAudioInput.addEventListener("change", (event) => {
+        const newFiles = event.target.files ? Array.from(event.target.files) : [];
+        if (newFiles.length > 0) {
+          // Add new files to accumulated files
+          accumulatedFiles.audio.push(...newFiles);
+          const totalCount = accumulatedFiles.audio.length;
+          const meta = document.getElementById("update-audio-meta");
+          if (meta) {
+            if (totalCount === 0) {
+              meta.textContent = "";
+            } else if (totalCount === 1) {
+              meta.textContent = `Selected: ${accumulatedFiles.audio[0].name}`;
+            } else {
+              const names = accumulatedFiles.audio.map(f => f.name).join(", ");
+              meta.textContent = `Selected ${totalCount} files: ${names}`;
+            }
+          }
+        }
+        // Clear the input so the same file can be selected again
+        event.target.value = "";
+      });
+      
+      confirmYesBtn.addEventListener("click", () => {
+        if (typeof confirmAction === "function") {
+          confirmAction();
+        }
+        closeConfirmModal();
+      });
+      confirmNoBtn.addEventListener("click", closeConfirmModal);
+      confirmCloseBtn.addEventListener("click", closeConfirmModal);
+
+      updateOverlay.addEventListener("click", (event) => {
+        if (event.target === updateOverlay) {
+          closeUpdatePanel();
+        }
+      });
+
+      confirmOverlay.addEventListener("click", (event) => {
+        if (event.target === confirmOverlay) {
+          closeConfirmModal();
+        }
+      });
+
+      document.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-file-action]");
+        if (!button) return;
+        const action = button.dataset.fileAction;
+        let input = null;
+        if (button.dataset.fileTarget) {
+          input = document.getElementById(button.dataset.fileTarget);
+        } else {
+          const wrapper = button.closest(".file-input");
+          input = wrapper ? wrapper.querySelector('input[type="file"]') : null;
+        }
+        if (!input) return;
+        if (action === "capture") {
+          // Capture mode: enable multiple for modern browsers that support it
+          const captureValue = button.dataset.captureValue || "";
+          if (captureValue) {
+            input.setAttribute("capture", captureValue);
+          }
+          // Keep multiple - some browsers support taking multiple photos
+          input.setAttribute("multiple", "multiple");
+        }
+        if (action === "upload") {
+          // Upload mode: allow multiple files
+          input.removeAttribute("capture");
+          input.setAttribute("multiple", "multiple");
+        }
+        input.click();
+      });
+
+      setPlanStatus("draft");
+      
+      if (backToOrdersBtn) {
+        backToOrdersBtn.addEventListener("click", () => {
+          // Navigate to the React OrdersPage component
+          window.location.href = "/";
+        });
+      }
+      
+      if (submitPlanBtn) {
+        submitPlanBtn.addEventListener("click", saveAndSubmitPlan);
+      }
+      
+      // Save plan before leaving the page
+      window.addEventListener("beforeunload", (event) => {
+        if (hasLocalChanges && orderId) {
+          // Show a warning that data might not be saved
+          event.preventDefault();
+          event.returnValue = "You have unsaved changes. Do you want to leave?";
+        }
+      });
+      
+      // Load the saved plan data on page init - BEFORE rendering
+      loadPlan();
+    </script>
+  </body>
+</html>

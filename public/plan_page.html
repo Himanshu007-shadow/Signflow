@@ -1,0 +1,2595 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manufacturing Plan</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #0f172a;
+        --muted: #64748b;
+        --paper: #f8fafc;
+        --card: #ffffff;
+        --accent: #2563eb;
+        --accent-dark: #1d4ed8;
+        --accent-soft: #dbeafe;
+        --line: #e2e8f0;
+        --shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Inter", sans-serif;
+        color: var(--ink);
+        background: var(--paper);
+      }
+
+      .page {
+        min-height: 100vh;
+        padding: 32px 24px 60px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .page::before,
+      .page::after {
+        content: "";
+        position: absolute;
+        width: 360px;
+        height: 360px;
+        border-radius: 50%;
+        background: linear-gradient(130deg, rgba(37, 99, 235, 0.18), rgba(219, 234, 254, 0.1));
+        filter: blur(6px);
+        z-index: 0;
+        display: none;
+      }
+
+      .page::before {
+        top: -120px;
+        right: -80px;
+      }
+
+      .page::after {
+        bottom: -160px;
+        left: -120px;
+      }
+
+      .content {
+        max-width: 1160px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+      }
+
+      header {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .header-top {
+        display: flex;
+        justify-content: flex-start;
+      }
+
+      .eyebrow {
+        font-size: 14px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      h1 {
+        font-family: "Inter", sans-serif;
+        font-size: clamp(32px, 5vw, 52px);
+        font-weight: 700;
+        margin: 0;
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+      }
+
+      .hero-card {
+        background: var(--card);
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--line);
+      }
+
+      .hero-card p {
+        margin: 6px 0 0;
+        color: var(--muted);
+      }
+
+      .hero-card input {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 8px 10px;
+        font-family: inherit;
+        font-size: 14px;
+        background: #f8fafc;
+        color: var(--ink);
+      }
+
+      .meta-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+      }
+
+      .field {
+        background: var(--card);
+        border-radius: 14px;
+        padding: 16px;
+        border: 1px solid var(--line);
+        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .field label {
+        font-size: 12px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+      }
+
+      .field input,
+      .field select,
+      .field textarea {
+        font-family: inherit;
+        font-size: 15px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        padding: 10px 12px;
+        background: #f8fafc;
+      }
+
+      .stages {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .section-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .section-head h2 {
+        font-size: 22px;
+        margin: 0;
+      }
+
+      .btn {
+        border: none;
+        padding: 10px 18px;
+        border-radius: 10px;
+        background: var(--accent);
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 18px rgba(37, 99, 235, 0.22);
+      }
+
+      .btn-secondary {
+        background: #f1f5f9;
+        color: var(--ink);
+        border: 1px solid var(--line);
+      }
+
+      .stage-card {
+        background: var(--card);
+        border-radius: 16px;
+        padding: 18px 20px 22px;
+        border: 1px solid var(--line);
+        box-shadow: 0 12px 20px rgba(15, 23, 42, 0.08);
+        animation: rise 0.6s ease both;
+        transition: all 0.3s ease;
+      }
+
+      .stage-card.collapsed {
+        padding: 12px 20px;
+      }
+
+      .stage-card.collapsed .stage-content {
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        margin-top: 0;
+      }
+
+      .stage-content {
+        max-height: 100000px;
+        overflow: visible;
+        opacity: 1;
+        transition: max-height 0.3s ease, opacity 0.3s ease, margin-top 0.3s ease;
+        margin-top: 12px;
+      }
+
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .stage-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 0;
+      }
+
+      .stage-expand-btn {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+        transition: all 0.2s ease;
+        border-radius: 6px;
+        font-size: 14px;
+        line-height: 1;
+        flex-shrink: 0;
+      }
+
+      .stage-expand-btn:hover {
+        background: var(--paper);
+        color: var(--accent);
+      }
+
+      .expand-icon {
+        display: inline-block;
+        transition: transform 0.2s ease;
+      }
+
+      .stage-title {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        flex: 1;
+      }
+
+      .stage-title {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .stage-title h3 {
+        margin: 0;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .activity-count-badge {
+        font-size: 11px;
+        font-weight: 500;
+        padding: 4px 10px;
+        background: var(--accent-soft);
+        color: var(--accent-dark);
+        border-radius: 12px;
+        text-transform: lowercase;
+      }
+
+      .stage-target {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: var(--muted);
+        flex-shrink: 0;
+      }
+
+      .stage-target label {
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 600;
+      }
+
+      .stage-target input {
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        padding: 4px 8px;
+        font-size: 12px;
+        font-family: inherit;
+        background: #fff;
+        color: var(--ink);
+      }
+
+      .stage-error {
+        margin-top: 6px;
+        font-size: 12px;
+        color: #b91c1c;
+      }
+
+      .stage-error.hidden {
+        display: none;
+      }
+
+      .chip {
+        background: var(--accent-soft);
+        color: var(--accent-dark);
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .stage-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .status-select {
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        padding: 6px 10px;
+        font-family: inherit;
+        background: #fff;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--ink);
+      }
+
+      .status-select.status-todo {
+        background: #f1f5f9;
+        color: #475569;
+        border-color: #e2e8f0;
+      }
+
+      .status-select.status-in-progress {
+        background: #fef3c7;
+        color: #b45309;
+        border-color: #fde68a;
+      }
+
+      .status-select.status-done {
+        background: #dcfce7;
+        color: #166534;
+        border-color: #bbf7d0;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 10px 8px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      th {
+        color: var(--muted);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+      }
+
+      td input {
+        width: 100%;
+        border-radius: 10px;
+        border: 1px solid transparent;
+        background: #f8fafc;
+        padding: 6px 8px;
+        font-family: inherit;
+        font-size: 14px;
+      }
+
+      td input:focus {
+        outline: none;
+        border-color: #cbd5e1;
+        background: #fff;
+      }
+
+      .table-scroll {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .table-scroll table {
+        min-width: 520px;
+      }
+
+      .done-cell {
+        width: 70px;
+        text-align: center;
+      }
+
+      .row-actions {
+        width: 60px;
+        text-align: center;
+      }
+
+      .row-actions button {
+        border-radius: 50%;
+        border: 1px solid var(--line);
+        background: var(--accent-soft);
+        color: var(--accent-dark);
+        font-weight: 700;
+        width: 26px;
+        height: 26px;
+        cursor: pointer;
+      }
+
+      .activity-form {
+        margin-top: 12px;
+        display: none;
+        gap: 10px;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      }
+
+      .activity-form.visible {
+        display: grid;
+      }
+
+      .activity-form input {
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        padding: 8px 10px;
+        font-family: inherit;
+      }
+
+      .activity-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .mini-select {
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        padding: 8px 12px;
+        font-family: inherit;
+        background: #fff;
+        font-size: 13px;
+      }
+
+      .btn-ghost {
+        background: transparent;
+        color: var(--ink);
+        border: 1px solid var(--line);
+      }
+
+      .btn-danger {
+        background: #fee2e2;
+        color: #b91c1c;
+        border: 1px solid #fecaca;
+      }
+
+      .table-head {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .add-column-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 1px solid var(--line);
+        background: var(--accent-soft);
+        color: var(--accent-dark);
+        font-weight: 700;
+        cursor: pointer;
+        line-height: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .stage-footer {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 10px;
+        margin-top: 14px;
+        align-items: center;
+      }
+
+      .stage-footer .btn-danger {
+        justify-self: end;
+      }
+
+      .stage-footer-left {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .review-field {
+        padding: 10px 12px;
+        min-width: 200px;
+        text-align: center;
+      }
+
+      .review-field label {
+        font-size: 11px;
+      }
+
+      .review-field input {
+        padding: 6px 8px;
+        font-size: 13px;
+      }
+
+      .stages-footer {
+        display: flex;
+        justify-content: flex-start;
+      }
+
+      .add-stage {
+        display: grid;
+        gap: 12px;
+        background: #eff6ff;
+        padding: 18px;
+        border-radius: 18px;
+        border: 1px dashed #bfdbfe;
+      }
+
+      .footer {
+        display: grid;
+        gap: 12px;
+      }
+
+      .footer textarea {
+        min-height: 120px;
+        resize: vertical;
+      }
+
+      .submit-bar {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+      }
+
+      .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        pointer-events: none;
+      }
+
+      .toast {
+        background: #0f172a;
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: 12px;
+        font-size: 13px;
+        box-shadow: 0 12px 24px rgba(15, 23, 42, 0.2);
+        opacity: 0;
+        transform: translateY(-6px);
+        transition: opacity 0.2s ease, transform 0.2s ease;
+      }
+
+      .toast.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .plan-status {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        border: 1px solid transparent;
+        background: #f1f5f9;
+        color: #475569;
+      }
+
+      .status-pill.status-draft {
+        background: #f1f5f9;
+        border-color: #e2e8f0;
+        color: #475569;
+      }
+
+      .status-pill.status-submitted {
+        background: #fef3c7;
+        border-color: #fde68a;
+        color: #b45309;
+      }
+
+      .status-pill.status-approved {
+        background: #dcfce7;
+        border-color: #bbf7d0;
+        color: #166534;
+      }
+
+      .status-pill.status-needs_changes {
+        background: #fee2e2;
+        border-color: #fecaca;
+        color: #b91c1c;
+      }
+
+      .status-note {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .status-note.unsaved {
+        color: #b45309;
+        font-weight: 600;
+      }
+
+      .board-tabs {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        border-bottom: 2px solid var(--line);
+        margin-bottom: 24px;
+        padding-bottom: 0;
+        padding: 8px 0;
+      }
+
+      .board-tabs::-webkit-scrollbar {
+        height: 6px;
+      }
+
+      .board-tabs::-webkit-scrollbar-track {
+        background: var(--paper);
+      }
+
+      .board-tabs::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+
+      .board-tabs::-webkit-scrollbar-thumb:hover {
+        background: var(--muted);
+      }
+
+      .board-tab {
+        padding: 12px 16px;
+        background: transparent;
+        border: none;
+        border-bottom: 3px solid transparent;
+        cursor: pointer;
+        color: var(--muted);
+        transition: all 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        min-width: 200px;
+        max-width: 250px;
+      }
+
+      .board-tab-header {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        width: 100%;
+      }
+
+      .board-tab-title {
+        font-weight: 600;
+        font-size: 15px;
+        color: var(--ink);
+      }
+
+      .board-tab-type {
+        font-size: 11px;
+        color: var(--muted);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .board-tab-details {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        width: 100%;
+      }
+
+      .board-tab-specs {
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 400;
+      }
+
+      .board-tab-location {
+        font-size: 11px;
+        color: var(--muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .board-tab-date {
+        font-size: 11px;
+        color: var(--accent);
+        font-weight: 500;
+      }
+
+      .board-tab-images {
+        display: flex;
+        gap: 6px;
+        width: 100%;
+        margin-top: 4px;
+      }
+
+      .board-tab-image {
+        flex: 1;
+        height: 60px;
+        border-radius: 4px;
+        overflow: hidden;
+        background: var(--paper);
+        border: 1px solid var(--border);
+      }
+
+      .board-tab-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .board-tab:hover {
+        color: var(--ink);
+        background: var(--paper);
+      }
+
+      .board-tab:hover .board-tab-specs,
+      .board-tab:hover .board-tab-location {
+        color: var(--ink);
+      }
+
+      .board-tab.active {
+        color: var(--accent);
+        border-bottom-color: var(--accent);
+      }
+
+      .board-tab.active .board-tab-title {
+        color: var(--accent);
+      }
+
+      .board-tab.active .board-tab-info {
+        color: var(--ink);
+      }
+
+      .delivery-date-section {
+        margin-bottom: 24px;
+        padding: 16px;
+        background: var(--paper);
+        border-radius: 8px;
+        border: 1px solid var(--whisper);
+      }
+
+      .delivery-date-section label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--ink);
+      }
+
+      .delivery-date-section input[type="date"] {
+        width: 100%;
+        max-width: 300px;
+        padding: 10px;
+        border: 1px solid var(--whisper);
+        border-radius: 6px;
+        font-size: 14px;
+      }
+
+      @media (max-width: 720px) {
+        .section-head {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .submit-bar {
+          justify-content: stretch;
+        }
+
+        .submit-bar .btn {
+          width: 100%;
+        }
+
+        .stage-header {
+          flex-wrap: wrap;
+        }
+
+        .stage-title {
+          width: 100%;
+          order: 1;
+        }
+
+        .stage-target {
+          order: 2;
+          margin-left: auto;
+        }
+
+        .stage-expand-btn {
+          order: 0;
+          align-self: flex-start;
+        }
+
+        .activity-count-badge {
+          font-size: 10px;
+          padding: 3px 8px;
+        }
+
+        .stage-title h3 {
+          font-size: 17px;
+          flex-wrap: wrap;
+        }
+
+        .stage-footer {
+          grid-template-columns: 1fr;
+          justify-items: stretch;
+        }
+
+        .review-field {
+          text-align: left;
+        }
+
+        .table-scroll {
+          width: 100%;
+          overflow: visible;
+        }
+
+        .table-scroll table {
+          min-width: 0;
+          width: 100%;
+          border-collapse: separate;
+          border-spacing: 0 12px;
+        }
+
+        .table-scroll thead {
+          display: block;
+        }
+
+        .table-scroll thead tr {
+          display: flex;
+          justify-content: flex-end;
+        }
+
+        .table-scroll thead th {
+          display: none;
+          border: none;
+          padding: 0;
+        }
+
+        .table-scroll thead th.row-actions {
+          display: flex;
+          justify-content: flex-end;
+          padding-bottom: 8px;
+        }
+
+        .table-scroll tbody,
+        .table-scroll tbody tr,
+        .table-scroll tbody td {
+          display: block;
+          width: 100%;
+        }
+
+        .table-scroll tbody tr {
+          border: 1px solid var(--line);
+          border-radius: 14px;
+          padding: 10px 12px;
+          background: #fff;
+          box-shadow: 0 10px 18px rgba(16, 20, 24, 0.04);
+          margin-bottom: 12px;
+        }
+
+        .table-scroll tbody tr:last-child {
+          margin-bottom: 0;
+        }
+
+        .table-scroll tbody td {
+          border: none;
+          padding: 6px 0;
+          display: grid;
+          grid-template-columns: minmax(0, 120px) 1fr;
+          gap: 10px;
+          align-items: center;
+        }
+
+        .table-scroll tbody td::before {
+          content: attr(data-label);
+          font-size: 11px;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          color: var(--muted);
+        }
+
+        .table-scroll tbody td.done-cell,
+        .table-scroll tbody td.row-actions {
+          grid-template-columns: minmax(0, 120px) auto;
+        }
+
+        .table-scroll tbody td.row-actions button {
+          margin-left: 0;
+        }
+
+        th,
+        td {
+          white-space: normal;
+        }
+
+        td input {
+          min-width: 0;
+          width: 100%;
+        }
+
+        td input[type="checkbox"] {
+          width: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="toast-container" id="toast-container"></div>
+    <div class="page">
+      <div class="content">
+        <header>
+          <div class="header-top">
+            <a class="btn btn-secondary" href="/orders.html" id="back-to-orders">Back to Orders</a>
+          </div>
+          <span class="eyebrow">Signwale Manufacturing</span>
+          <h1 id="page-title">Planning Page: Manufacturing Stages</h1>
+          <div class="plan-status">
+            <span class="status-pill status-draft" id="plan-status">Draft</span>
+            <span class="status-note" id="plan-status-message"></span>
+            <span class="status-note unsaved" id="plan-unsaved"></span>
+          </div>
+          <div class="hero-grid">
+            <div class="hero-card">
+              <strong>Project</strong>
+              <input id="project-name" type="text" value="Retail Signage Rollout" />
+            </div>
+            <div class="hero-card">
+              <strong>Order Completion Date</strong>
+              <p id="order-completion-date">-</p>
+            </div>
+            <div class="hero-card">
+              <strong>Customer</strong>
+              <p id="customer-name">Customer</p>
+            </div>
+            <div class="hero-card">
+              <strong>Order</strong>
+              <p id="order-number">Order #</p>
+            </div>
+          </div>
+        </header>
+
+        <div class="board-tabs" id="board-tabs"></div>
+
+        <!-- Board Installation Date Section -->
+        <div class="installation-date-section" id="installation-date-section" style="display: none;">
+          <label for="board-installation-date">Board Installation Date</label>
+          <input id="board-installation-date" type="date" />
+        </div>
+
+        <section class="meta-grid">
+          <div class="field">
+            <label for="price">Final Installation Price</label>
+            <input id="price" type="text" placeholder="INR 0.00" />
+          </div>
+          <div class="field">
+            <label for="incharge">Manufacturing Incharge</label>
+            <select id="incharge">
+              <option>Select incharge</option>
+              <option>Hannan shariff</option>
+              <option>Himanshu choudary</option>
+              <option>Vagish</option>
+              <option>Vamshi</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="review-date">Designer Review Date</label>
+            <input id="review-date" type="date" />
+          </div>
+        </section>
+
+        <section class="footer">
+          <div class="field">
+            <label for="review-notes">Designer Review & Notes</label>
+            <textarea id="review-notes" placeholder="Capture review notes, revisions, and confirmations."></textarea>
+          </div>
+        </section>
+
+        <section class="stages">
+          <div class="section-head">
+            <h2>Production Stages</h2>
+          </div>
+
+          <div id="stages-container"></div>
+
+          <form class="add-stage" id="stage-form">
+            <strong>New Stage Details</strong>
+            <input id="stage-name" type="text" placeholder="Stage name (e.g. Fabrication)" required />
+            <input id="stage-target" type="date" />
+            <button class="btn" type="submit">Create Stage</button>
+          </form>
+
+          <div class="stages-footer">
+            <button class="btn btn-secondary" id="add-stage-toggle">Add New Stage</button>
+          </div>
+        </section>
+
+        <section class="submit-section">
+          <div class="submit-bar">
+            <button class="btn btn-secondary" type="button" id="save-plan">Save Draft</button>
+            <button class="btn" type="button" id="submit-plan">Save and Submit</button>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      const APP_BASE = window.ORDER_APP_BASE || window.location.origin;
+      const resolveApiBase = () => {
+        if (window.ORDER_API_BASE) return window.ORDER_API_BASE;
+        const host = window.location.hostname;
+        if (host === "localhost" || host === "127.0.0.1") {
+          return "http://localhost:5000/api";
+        }
+        return `${APP_BASE}/api/api`;
+      };
+      const API_BASE = resolveApiBase();
+
+      const resolveAuthToken = () => {
+        const params = new URLSearchParams(window.location.search);
+        const urlToken = params.get("token") || params.get("authToken");
+        if (urlToken) {
+          localStorage.setItem("authToken", urlToken);
+          params.delete("token");
+          params.delete("authToken");
+          const query = params.toString();
+          const nextUrl = `${window.location.pathname}${query ? `?${query}` : ""}${
+            window.location.hash || ""
+          }`;
+          window.history.replaceState(null, "", nextUrl);
+        }
+        return (
+          localStorage.getItem("authToken") ||
+          sessionStorage.getItem("authToken") ||
+          localStorage.getItem("token") ||
+          localStorage.getItem("jwt") ||
+          ""
+        );
+      };
+
+      const token = resolveAuthToken();
+
+      const pageTitle = document.getElementById("page-title");
+      const projectName = document.getElementById("project-name");
+      const customerName = document.getElementById("customer-name");
+      const orderNumber = document.getElementById("order-number");
+      const priceInput = document.getElementById("price");
+      const inchargeSelect = document.getElementById("incharge");
+      const reviewDateInput = document.getElementById("review-date");
+      const reviewNotes = document.getElementById("review-notes");
+      const statusBadge = document.getElementById("plan-status");
+      const statusMessage = document.getElementById("plan-status-message");
+      const unsavedIndicator = document.getElementById("plan-unsaved");
+      const savePlanBtn = document.getElementById("save-plan");
+      const submitPlanBtn = document.getElementById("submit-plan");
+      const toastContainer = document.getElementById("toast-container");
+      const boardInstallationDateInput = document.getElementById("board-installation-date");
+      const installationDateSection = document.getElementById("installation-date-section");
+      const orderCompletionDate = document.getElementById("order-completion-date");
+
+      let hasUnsavedChanges = false;
+      const setUnsavedChanges = (value) => {
+        hasUnsavedChanges = value;
+        if (!unsavedIndicator) return;
+        unsavedIndicator.textContent = value ? "Unsaved changes" : "";
+      };
+      const markUnsaved = () => {
+        if (!hasUnsavedChanges) {
+          setUnsavedChanges(true);
+        }
+      };
+      const watchValueChange = (el, eventName = "input") => {
+        if (!el) return;
+        el.addEventListener(eventName, markUnsaved);
+      };
+
+      const params = new URLSearchParams(window.location.search);
+      const orderId = params.get("order");
+      const orderName = params.get("name");
+      const orderCustomer = params.get("customer");
+      const urlBoardId = params.get("board_id");
+      const urlBoardIndex = params.get("board_index");
+
+      let currentOrder = null;
+      let boardsList = [];
+      let currentBoardId = null;
+      let boardPlansCache = {};
+      // Flag to indicate if we're showing a single board (from URL) vs all boards with tabs
+      let singleBoardMode = Boolean(urlBoardId);
+
+      watchValueChange(projectName);
+      watchValueChange(priceInput);
+      watchValueChange(reviewNotes);
+      if (inchargeSelect) {
+        inchargeSelect.addEventListener("change", markUnsaved);
+      }
+      if (reviewDateInput) {
+        reviewDateInput.addEventListener("change", markUnsaved);
+      }
+
+      if (orderName) {
+        pageTitle.textContent = `Planning Page: ${orderName}`;
+        projectName.value = orderName;
+      }
+
+      if (orderCustomer) {
+        customerName.textContent = orderCustomer;
+      }
+
+      if (orderId) {
+        orderNumber.textContent = `Order #${orderId}`;
+      }
+
+      const formatCurrency = (value) => {
+        const amount = Number(value);
+        if (!Number.isFinite(amount)) return "";
+        return `INR ${amount.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      };
+
+      function parseBoardsFromOrder(order) {
+        try {
+          if (!order.pricing_details) return [];
+          const pricing = typeof order.pricing_details === 'string' 
+            ? JSON.parse(order.pricing_details) 
+            : order.pricing_details;
+          const items = pricing?.selections?.items || [];
+          return items.map((item, index) => ({
+            id: item.id,
+            index: index + 1,
+            category: item.category || 'N/A',
+            boardType: item.boardType || item.digitalType || 'N/A',
+            width: item.width || item.boardWidth || '',
+            height: item.height || item.boardHeight || '',
+            unit: item.boardUnit || item.unit || '',
+            installationDate: item.installationDate || item.installation_date || '',
+            quantity: item.quantity || item.qty || 1,
+            designImage: item.designImage || item.design_image || item.designImageUrl || item.frontColorImageUrl || '',
+            siteImage: item.siteImage || item.site_image || item.siteImageUrl || '',
+            price: item.price || item.totalPrice || 0,
+            shopName: item.shopName || item.shop_name || item.storeName || '',
+            location: item.location || item.address || '',
+            frameType: item.frameType || '',
+            lightingType: item.lightingType || '',
+            printType: item.printType || '',
+            data: item
+          }));
+        } catch (error) {
+          console.error('Error parsing boards:', error);
+          return [];
+        }
+      }
+
+      function renderBoardTabs() {
+        const tabsContainer = document.getElementById('board-tabs');
+        if (!tabsContainer) return;
+
+        // Hide tabs in single board mode (when board_id is passed via URL)
+        if (singleBoardMode || boardsList.length === 0) {
+          tabsContainer.style.display = 'none';
+          return;
+        }
+
+        tabsContainer.style.display = 'flex';
+        tabsContainer.innerHTML = boardsList.map((board, idx) => {
+          const dimensions = board.width && board.height 
+            ? `${board.width}x${board.height}${board.unit}` 
+            : '';
+          const installationInfo = board.installationDate 
+            ? `<div class="board-tab-date">📅 ${formatDate(board.installationDate)}</div>` 
+            : '';
+          
+          const location = board.shopName || board.location 
+            ? `<div class="board-tab-location">📍 ${board.shopName || board.location}</div>` 
+            : '';
+          
+          const designImageHtml = board.designImage 
+            ? `<div class="board-tab-image">
+                <img src="${board.designImage}" alt="Design" title="Design Image" />
+              </div>` 
+            : '';
+          
+          const siteImageHtml = board.siteImage 
+            ? `<div class="board-tab-image">
+                <img src="${board.siteImage}" alt="Site" title="Site Image" />
+              </div>` 
+            : '';
+          
+          const imagesHtml = (designImageHtml || siteImageHtml) 
+            ? `<div class="board-tab-images">${designImageHtml}${siteImageHtml}</div>` 
+            : '';
+          
+          return `
+            <button class="board-tab ${board.id === currentBoardId ? 'active' : ''}" data-board-id="${board.id}">
+              <div class="board-tab-header">
+                <div class="board-tab-title">Board ${board.index}</div>
+                <div class="board-tab-type">${board.category}</div>
+              </div>
+              <div class="board-tab-details">
+                <div class="board-tab-specs">${board.boardType}${dimensions ? ' • ' + dimensions : ''}</div>
+                ${location}
+                ${installationInfo}
+              </div>
+              ${imagesHtml}
+            </button>
+          `;
+        }).join('');
+
+        tabsContainer.querySelectorAll('.board-tab').forEach(tab => {
+          tab.addEventListener('click', async () => {
+            const boardId = tab.dataset.boardId;
+            await switchToBoard(boardId);
+          });
+        });
+      }
+
+      function formatDate(dateStr) {
+        if (!dateStr) return '';
+        try {
+          const date = new Date(dateStr);
+          return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+        } catch {
+          return dateStr;
+        }
+      }
+
+      function updateDeliveryDateUI() {
+        if (!currentBoardId || !deliveryDateSection || !boardDeliveryDateInput) return;
+        
+        // Show the delivery date section when boards are present
+        if (boardsList.length > 0) {
+          deliveryDateSection.style.display = 'block';
+          
+          // Load saved delivery date from cache
+          const cachedPlan = boardPlansCache[currentBoardId];
+          boardDeliveryDateInput.value = cachedPlan?.deliveryDate || '';
+        } else {
+          deliveryDateSection.style.display = 'none';
+        }
+      }
+
+      function updateOrderCompletionDate() {
+        if (!orderCompletionDate) return;
+        
+        // Get all installation dates from board data
+        const installationDates = boardsList
+          .map(board => board.installationDate)
+          .filter(date => date)
+          .map(date => new Date(date));
+        
+        if (installationDates.length === 0) {
+          orderCompletionDate.textContent = '-';
+          return;
+        }
+        
+        // Find the maximum (latest) date
+        const maxDate = new Date(Math.max(...installationDates));
+        orderCompletionDate.textContent = formatDate(maxDate.toISOString().split('T')[0]);
+      }
+
+      async function switchToBoard(boardId) {
+        if (boardId === currentBoardId) return;
+
+        // Auto-save current board if there are changes
+        if (hasUnsavedChanges && currentBoardId) {
+          await savePlan(true); // silent save
+        }
+
+        currentBoardId = boardId;
+        renderBoardTabs();
+        await loadPlan();
+        updateDeliveryDateUI();
+        updateOrderCompletionDate();
+      }
+
+      async function loadOrderDetails() {
+        if (!token) {
+          const redirect = encodeURIComponent(
+            `${window.location.pathname}${window.location.search}${window.location.hash || ""}`
+          );
+          window.location.href = `${APP_BASE}/login?redirect=${redirect}`;
+          return;
+        }
+
+        if (!orderId) {
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_BASE}/data/orders?limit=200`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (!response.ok) {
+            throw new Error(`Failed to fetch orders (${response.status})`);
+          }
+          const data = await response.json();
+          const orders = data.orders || [];
+          const selected = orders.find(
+            (order) => String(order.order_id) === String(orderId)
+          );
+          if (!selected) {
+            return;
+          }
+          currentOrder = selected;
+          if (selected.customer_name && !orderCustomer) {
+            customerName.textContent = selected.customer_name;
+          }
+          if (selected.total_value != null) {
+            priceInput.value = formatCurrency(selected.total_value);
+          }
+          
+          // Note: Plan status is loaded from the plan itself in loadPlan(), not from order approval_status
+          
+          // Parse and initialize boards
+          boardsList = parseBoardsFromOrder(selected);
+          if (boardsList.length > 0) {
+            // If board_id is passed via URL, use that specific board
+            if (urlBoardId) {
+              const targetBoard = boardsList.find(board => board.id === urlBoardId);
+              if (targetBoard) {
+                currentBoardId = targetBoard.id;
+                // Update page title to show board-specific info
+                const boardLabel = `Board ${targetBoard.index}`;
+                pageTitle.textContent = `Planning: ${orderName || 'Order'} - ${boardLabel}`;
+              } else {
+                // Fallback to first board if URL board not found
+                currentBoardId = boardsList[0].id;
+              }
+            } else {
+              currentBoardId = boardsList[0].id;
+            }
+            renderBoardTabs();
+            updateOrderCompletionDate();
+            // Load plan for the selected board
+            await loadPlan();
+            updateDeliveryDateUI();
+            // Display board info header in single board mode
+            renderBoardInfoHeader();
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      // Render board info header when in single board mode
+      function renderBoardInfoHeader() {
+        if (!singleBoardMode || !currentBoardId) return;
+        
+        const board = boardsList.find(b => b.id === currentBoardId);
+        if (!board) return;
+        
+        const boardTabsContainer = document.getElementById('board-tabs');
+        if (!boardTabsContainer) return;
+        
+        // Create a board info card instead of tabs
+        const dimensions = board.width && board.height 
+          ? `${board.width}x${board.height}${board.unit}` 
+          : '';
+        
+        boardTabsContainer.style.display = 'block';
+        boardTabsContainer.innerHTML = `
+          <div class="board-info-card" style="display: flex; gap: 16px; padding: 16px; background: var(--card); border-radius: 14px; border: 1px solid var(--line); box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);">
+            ${board.designImage ? `
+              <div style="width: 100px; height: 80px; border-radius: 8px; overflow: hidden; flex-shrink: 0; background: #f1f5f9;">
+                <img src="${board.designImage}" alt="Board Design" style="width: 100%; height: 100%; object-fit: cover;" />
+              </div>
+            ` : ''}
+            <div style="flex: 1;">
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                <span style="font-size: 18px; font-weight: 600; color: var(--ink);">Board ${board.index}</span>
+                <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; padding: 3px 8px; background: var(--accent-soft); color: var(--accent-dark); border-radius: 999px;">${board.category}</span>
+              </div>
+              <div style="font-size: 14px; color: var(--muted);">
+                ${board.boardType}${dimensions ? ` • ${dimensions}` : ''}
+              </div>
+              ${board.shopName || board.location ? `
+                <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">📍 ${board.shopName || board.location}</div>
+              ` : ''}
+              ${board.installationDate ? `
+                <div style="font-size: 12px; color: var(--accent); margin-top: 4px;">📅 Installation: ${formatDate(board.installationDate)}</div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }
+
+      loadOrderDetails();
+
+      const stagesContainer = document.getElementById("stages-container");
+      const stageForm = document.getElementById("stage-form");
+      const addStageToggle = document.getElementById("add-stage-toggle");
+
+      const STATUS_LABELS = {
+        draft: "Draft",
+        submitted: "Submitted",
+        approved: "Approved",
+        needs_changes: "Needs Changes",
+      };
+
+      const defaultColumns = [
+        { key: "applicable", label: "Applicable", type: "check" },
+        { key: "date", label: "Date" },
+        { key: "activity", label: "Activity" },
+        
+        { key: "note", label: "Note", type: "note" },
+      ];
+
+      const procurementColumns = [
+        { key: "applicable", label: "Applicable", type: "check" },
+        { key: "date", label: "Date" },
+        { key: "activity", label: "Activity" },
+        { key: "qty", label: "Qty" },
+        { key: "type", label: "Type" },
+        { key: "note", label: "Note", type: "note" },
+      ];
+
+      const defaultStages = [
+        {
+          name: "Procurement",
+          target: "2026-01-21",
+          columns: procurementColumns.map((column) => ({ ...column })),
+          activities: [
+            {
+              date: "2026-01-17",
+              activity: "Material received - ACP sheets",
+              applicable: false,
+              qty: "",
+              type: "",
+              note: "",
+            },
+            {
+              date: "2026-01-18",
+              activity: "Inventory logged - LED modules",
+              applicable: false,
+              qty: "",
+              type: "",
+              note: "",
+            },
+          ],
+          reviewDate: "",
+        },
+        {
+          name: "Fabrication",
+          target: "2026-01-28",
+          columns: defaultColumns.map((column) => ({ ...column })),
+          activities: [
+            {
+              date: "2026-01-24",
+              activity: "Frame welding",
+              applicable: false,
+              note: "",
+            },
+          ],
+          reviewDate: "",
+        },
+      ];
+
+      const cloneColumns = (columns) => (columns || []).map((column) => ({ ...column }));
+
+      const cloneActivities = (activities) =>
+        (activities || []).map((activity) => ({ ...activity }));
+
+      const cloneStages = (stages) =>
+        (stages || []).map((stage) => ({
+          ...stage,
+          columns: cloneColumns(stage.columns),
+          activities: cloneActivities(stage.activities),
+        }));
+
+      let stagesState = cloneStages(defaultStages);
+
+      function ensureColumns(stage) {
+        const isProcurement = stage.name && stage.name.toLowerCase() === 'procurement';
+        const expectedColumns = isProcurement ? procurementColumns : defaultColumns;
+        
+        // Always update Procurement stage to have correct columns
+        if (isProcurement) {
+          // Check if columns match procurement columns
+          const hasQtyColumn = stage.columns?.some(col => col.key === 'qty');
+          const hasTypeColumn = stage.columns?.some(col => col.key === 'type');
+          
+          if (!hasQtyColumn || !hasTypeColumn) {
+            // Replace with procurement columns
+            stage.columns = procurementColumns.map((column) => ({ ...column }));
+            // Ensure all activities have the new fields
+            if (stage.activities) {
+              stage.activities.forEach(activity => {
+                if (!('qty' in activity)) activity.qty = '';
+                if (!('type' in activity)) activity.type = '';
+              });
+            }
+          }
+        } else if (!stage.columns || !stage.columns.length) {
+          // For non-procurement stages, only set if missing
+          stage.columns = defaultColumns.map((column) => ({ ...column }));
+        }
+      }
+
+      function toKey(label, existingKeys) {
+        const base = label
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "") || "column";
+        let key = base;
+        let index = 1;
+        while (existingKeys.has(key)) {
+          key = `${base}-${index}`;
+          index += 1;
+        }
+        return key;
+      }
+
+      function isDateColumn(column) {
+        return column.key.toLowerCase().includes("date") || column.label.toLowerCase().includes("date");
+      }
+
+      function isCheckColumn(column) {
+        return column.type === "check";
+      }
+
+      function escapeHtml(value) {
+        return String(value || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function parseDateValue(value) {
+        if (!value) return null;
+        const date = new Date(`${value}T00:00:00`);
+        return Number.isNaN(date.getTime()) ? null : date;
+      }
+
+      function getStageDateError(stage) {
+        const targetValue = stage?.target;
+        if (!targetValue) return "";
+        const targetDate = parseDateValue(targetValue);
+        if (!targetDate) return "";
+        const columns = Array.isArray(stage?.columns) ? stage.columns : [];
+        const dateKeys = columns.filter(isDateColumn).map((column) => column.key);
+        if (dateKeys.length === 0) return "";
+        const activities = Array.isArray(stage?.activities) ? stage.activities : [];
+        for (const activity of activities) {
+          for (const key of dateKeys) {
+            const value = activity?.[key];
+            const activityDate = parseDateValue(value);
+            if (activityDate && activityDate > targetDate) {
+              return "One or more activity dates exceed the stage target.";
+            }
+          }
+        }
+        return "";
+      }
+
+      function updateStageDateError(stageIndex) {
+        const stage = stagesState[stageIndex];
+        const errorNode = document.querySelector(`[data-stage-error="${stageIndex}"]`);
+        if (!errorNode || !stage) return;
+        const message = getStageDateError(stage);
+        errorNode.textContent = message;
+        errorNode.classList.toggle("hidden", !message);
+      }
+
+      function createStageCard(stage, stageIndex) {
+        ensureColumns(stage);
+        // Initialize collapsed state if not set
+        if (stage.collapsed === undefined) {
+          stage.collapsed = true; // Default to collapsed
+        }
+        
+        const card = document.createElement("div");
+        card.className = "stage-card";
+        if (stage.collapsed) {
+          card.classList.add("collapsed");
+        }
+
+        const header = document.createElement("div");
+        header.className = "stage-header";
+        
+        // Add expand/collapse button
+        const expandBtn = document.createElement("button");
+        expandBtn.type = "button";
+        expandBtn.className = "stage-expand-btn";
+        expandBtn.innerHTML = stage.collapsed 
+          ? '<span class="expand-icon">▶</span>' 
+          : '<span class="expand-icon">▼</span>';
+        expandBtn.title = stage.collapsed ? "Expand stage" : "Collapse stage";
+        expandBtn.addEventListener("click", () => {
+          stage.collapsed = !stage.collapsed;
+          card.classList.toggle("collapsed");
+          expandBtn.innerHTML = stage.collapsed 
+            ? '<span class="expand-icon">▶</span>' 
+            : '<span class="expand-icon">▼</span>';
+          expandBtn.title = stage.collapsed ? "Expand stage" : "Collapse stage";
+        });
+        
+        header.appendChild(expandBtn);
+
+        const title = document.createElement("div");
+        title.className = "stage-title";
+        const titleText = document.createElement("h3");
+        titleText.textContent = stage.name;
+        
+        // Add activity count badge
+        const activityCount = document.createElement("span");
+        activityCount.className = "activity-count-badge";
+        activityCount.textContent = `${stage.activities.length} ${stage.activities.length === 1 ? 'activity' : 'activities'}`;
+        titleText.appendChild(activityCount);
+        
+        title.appendChild(titleText);
+
+        const targetWrap = document.createElement("div");
+        targetWrap.className = "stage-target";
+        targetWrap.innerHTML = `
+          <label>TARGET</label>
+          <input type="date" value="${escapeHtml(stage.target || "")}" />
+        `;
+        const targetInput = targetWrap.querySelector("input");
+        targetInput.addEventListener("change", () => {
+          stage.target = targetInput.value;
+          markUnsaved();
+          updateStageDateError(stageIndex);
+        });
+
+        header.appendChild(title);
+        header.appendChild(targetWrap);
+
+        const stageError = document.createElement("div");
+        stageError.className = "stage-error";
+        stageError.dataset.stageError = stageIndex;
+        const errorMessage = getStageDateError(stage);
+        if (errorMessage) {
+          stageError.textContent = errorMessage;
+        } else {
+          stageError.classList.add("hidden");
+        }
+
+        // Create collapsible content wrapper
+        const stageContent = document.createElement("div");
+        stageContent.className = "stage-content";
+
+        const tableWrap = document.createElement("div");
+        tableWrap.className = "table-scroll";
+
+        const table = document.createElement("table");
+        table.innerHTML = `
+          <thead>
+              <tr>
+                ${stage.columns
+                  .map((column) => {
+                    const labelText = escapeHtml(column.label);
+                    const label = `<span class="table-head">${labelText}</span>`;
+                    const thClass = isCheckColumn(column) ? ' class="done-cell"' : "";
+                    return `<th${thClass}>${label}</th>`;
+                  })
+                  .join("")}
+                <th class="row-actions"><button class="add-column-btn" type="button">+</button></th>
+              </tr>
+            </thead>
+            <tbody>
+              ${stage.activities
+                .map((activity, activityIndex) => {
+                  stage.columns.forEach((column) => {
+                    if (!(column.key in activity)) activity[column.key] = "";
+                  });
+                  // Debug log to see activity data
+                  if (activityIndex === 0) {
+                    console.log(`[Stage: ${stage.name}] First activity:`, activity);
+                  }
+                  return `
+                  <tr>
+                    ${stage.columns
+                      .map((column) => {
+                        const labelText = escapeHtml(column.label);
+                        const value = escapeHtml(activity[column.key] || "");
+                        if (isCheckColumn(column)) {
+                          const isChecked = value === true || value === "1" || value === "true" || activity[column.key] === true;
+                          const checked = isChecked ? "checked" : "";
+                          return `
+                            <td class="done-cell" data-label="${labelText}">
+                              <input
+                                type="checkbox"
+                                ${checked}
+                                data-stage="${stageIndex}"
+                                data-row="${activityIndex}"
+                                data-key="${column.key}"
+                              />
+                            </td>
+                          `;
+                        }
+                        if (column.type === "status") {
+                          const statusClass = `status-${(value || "start").toLowerCase()}`;
+                          return `
+                            <td data-label="${labelText}">
+                              <select
+                                class="status-select ${statusClass}"
+                                data-stage="${stageIndex}"
+                                data-row="${activityIndex}"
+                                data-key="${column.key}"
+                              >
+                                <option value="start" ${value === "start" ? "selected" : ""}>start</option>
+                                <option value="in progress" ${value === "in progress" ? "selected" : ""}>in progress</option>
+                                <option value="done" ${value === "done" ? "selected" : ""}>done</option>
+                                <option value="rework" ${value === "rework" ? "selected" : ""}>rework</option>
+                              </select>
+                            </td>
+                          `;
+                        }
+                        if (column.type === "note") {
+                          return `
+                            <td data-label="${labelText}">
+                              <textarea
+                                data-stage="${stageIndex}"
+                                data-row="${activityIndex}"
+                                data-key="${column.key}"
+                                style="min-height: 40px; width: 100%;"
+                              >${value}</textarea>
+                            </td>
+                          `;
+                        }
+                        const type = isDateColumn(column) ? "date" : "text";
+                        return `
+                          <td data-label="${labelText}">
+                            <input
+                              type="${type}"
+                              value="${value}"
+                              data-stage="${stageIndex}"
+                              data-row="${activityIndex}"
+                              data-key="${column.key}"
+                            />
+                          </td>
+                        `;
+                      })
+                      .join("")}
+                    <td class="row-actions" data-label="Remove">
+                      <button type="button" data-stage="${stageIndex}" data-row="${activityIndex}">-</button>
+                    </td>
+                  </tr>
+                `;
+                })
+                .join("")}
+            </tbody>
+        `;
+        tableWrap.appendChild(table);
+
+        const activityForm = document.createElement("form");
+        activityForm.className = "activity-form";
+        activityForm.innerHTML = `
+          ${stage.columns
+            .map((column) => {
+              if (isCheckColumn(column)) {
+                return `
+                  <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" name="${column.key}" value="1" style="width: auto; cursor: pointer;" />
+                    <span>${escapeHtml(column.label)}</span>
+                  </label>
+                `;
+              }
+              if (column.type === "status") {
+                return `
+                  <select name="${column.key}">
+                    <option value="start">start</option>
+                    <option value="in progress">in progress</option>
+                    <option value="done">done</option>
+                    <option value="rework">rework</option>
+                  </select>
+                `;
+              }
+              if (column.type === "note") {
+                return `<textarea name="${column.key}" placeholder="${escapeHtml(
+                  column.label
+                )}"></textarea>`;
+              }
+              const type = isDateColumn(column) ? "date" : "text";
+              const required = column.key === "activity" ? "required" : "";
+              return `<input type="${type}" name="${column.key}" placeholder="${escapeHtml(
+                column.label
+              )}" ${required} />`;
+            })
+            .join("")}
+          <div class="activity-actions">
+            <button class="btn" type="submit">Save Activity</button>
+            <button class="btn btn-secondary" type="button">Cancel</button>
+          </div>
+        `;
+
+        const cancelBtn = activityForm.querySelector("button[type='button']");
+        cancelBtn.addEventListener("click", () => {
+          activityForm.classList.remove("visible");
+          activityForm.reset();
+        });
+
+        activityForm.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const formData = new FormData(activityForm);
+          const activity = {};
+          stage.columns.forEach((column) => {
+            if (isCheckColumn(column)) {
+              activity[column.key] = formData.get(column.key) === "1";
+            } else {
+              activity[column.key] = formData.get(column.key) || "";
+            }
+          });
+          if (!requireAuth()) return;
+          try {
+            await ensureTemplateActivity(stage, activity);
+            const key = activityIdentityKey(activity, stage);
+            if (key) {
+              const existingIndex = stage.activities.findIndex(
+                (entry) => activityIdentityKey(entry, stage) === key
+              );
+              if (existingIndex >= 0) {
+                stage.activities[existingIndex] = activity;
+              } else {
+                stage.activities.push(activity);
+              }
+            } else {
+              stage.activities.push(activity);
+            }
+            markUnsaved();
+            updateStageDateError(stageIndex);
+            activityForm.classList.remove("visible");
+            activityForm.reset();
+            renderStages();
+          } catch (error) {
+            console.error(error);
+          }
+        });
+
+        table.addEventListener("input", (event) => {
+          const target = event.target;
+          if (target.tagName === "TEXTAREA") {
+            const rowIndex = Number(target.dataset.row);
+            const key = target.dataset.key;
+            if (!Number.isNaN(rowIndex) && key) {
+              stage.activities[rowIndex][key] = target.value;
+              markUnsaved();
+              updateStageDateError(stageIndex);
+            }
+            return;
+          }
+          if (target.tagName !== "INPUT") return;
+          const rowIndex = Number(target.dataset.row);
+          const key = target.dataset.key;
+          if (!Number.isNaN(rowIndex) && key) {
+            if (target.type === "checkbox") {
+              stage.activities[rowIndex][key] = target.checked;
+            } else {
+              stage.activities[rowIndex][key] = target.value;
+            }
+            markUnsaved();
+            updateStageDateError(stageIndex);
+          }
+        });
+
+        table.addEventListener("change", (event) => {
+          const target = event.target;
+          if (target.tagName === "SELECT") {
+            const rowIndex = Number(target.dataset.row);
+            const key = target.dataset.key;
+            if (!Number.isNaN(rowIndex) && key) {
+              stage.activities[rowIndex][key] = target.value;
+              target.classList.remove("status-start", "status-in-progress", "status-done", "status-rework");
+              target.classList.add(`status-${target.value.toLowerCase().replace(" ", "-")}`);
+              markUnsaved();
+              updateStageDateError(stageIndex);
+            }
+            return;
+          }
+          if (target.tagName === "INPUT" && target.type === "checkbox") {
+            const rowIndex = Number(target.dataset.row);
+            const key = target.dataset.key;
+            if (!Number.isNaN(rowIndex) && key) {
+              stage.activities[rowIndex][key] = target.checked;
+              markUnsaved();
+              updateStageDateError(stageIndex);
+            }
+          }
+        });
+
+        table.addEventListener("click", (event) => {
+          const target = event.target;
+          if (!(target instanceof HTMLElement)) return;
+          if (target.tagName !== "BUTTON") return;
+          if (target.classList.contains("add-column-btn")) {
+            const label = window.prompt("Column name");
+            if (!label) return;
+            const trimmed = label.trim();
+            if (!trimmed) return;
+            const existingKeys = new Set(stage.columns.map((column) => column.key));
+            const key = toKey(trimmed, existingKeys);
+            stage.columns.push({ key, label: trimmed });
+            stage.activities.forEach((activity) => {
+              activity[key] = "";
+            });
+            markUnsaved();
+            updateStageDateError(stageIndex);
+            renderStages();
+            return;
+          }
+          const rowIndex = Number(target.dataset.row);
+          if (!Number.isNaN(rowIndex)) {
+            stage.activities.splice(rowIndex, 1);
+            markUnsaved();
+            updateStageDateError(stageIndex);
+            renderStages();
+          }
+        });
+
+        const stageFooter = document.createElement("div");
+        stageFooter.className = "stage-footer";
+
+        const footerLeft = document.createElement("div");
+        footerLeft.className = "stage-footer-left";
+
+        const addActivityBtn = document.createElement("button");
+        addActivityBtn.className = "btn btn-secondary";
+        addActivityBtn.type = "button";
+        addActivityBtn.textContent = "Add Activity";
+
+        addActivityBtn.addEventListener("click", () => {
+          activityForm.classList.toggle("visible");
+        });
+
+        footerLeft.appendChild(addActivityBtn);
+        const reviewField = document.createElement("div");
+        reviewField.className = "field review-field";
+        reviewField.innerHTML = `
+          <label>${escapeHtml(stage.name)} review date</label>
+          <input type="date" value="${escapeHtml(stage.reviewDate || "")}" />
+        `;
+        const reviewInput = reviewField.querySelector("input");
+        reviewInput.addEventListener("change", () => {
+          stage.reviewDate = reviewInput.value;
+          markUnsaved();
+        });
+        const deleteStageBtn = document.createElement("button");
+        deleteStageBtn.className = "btn btn-danger";
+        deleteStageBtn.type = "button";
+        deleteStageBtn.textContent = "Delete Stage";
+
+        deleteStageBtn.addEventListener("click", () => {
+          stagesState.splice(stageIndex, 1);
+          markUnsaved();
+          renderStages();
+        });
+
+        stageFooter.appendChild(footerLeft);
+        stageFooter.appendChild(reviewField);
+        stageFooter.appendChild(deleteStageBtn);
+
+        // Assemble stage content (collapsible)
+        stageContent.appendChild(tableWrap);
+        stageContent.appendChild(activityForm);
+        stageContent.appendChild(stageFooter);
+
+        card.appendChild(header);
+        card.appendChild(stageError);
+        card.appendChild(stageContent);
+        return card;
+      }
+
+      let isPlanEditable = true;
+
+      function renderStages() {
+        stagesContainer.innerHTML = "";
+        stagesState.forEach((stage, index) => {
+          stagesContainer.appendChild(createStageCard(stage, index));
+        });
+        if (!isPlanEditable) {
+          setFormEditable(false);
+        }
+      }
+
+      const setPlanStatus = (status, reviewNote, rejectionReason) => {
+        const normalized = status || "draft";
+        const label = STATUS_LABELS[normalized] || "Draft";
+        statusBadge.textContent = label;
+        statusBadge.className = `status-pill status-${normalized}`;
+        if (normalized === "needs_changes" && rejectionReason) {
+          statusMessage.textContent = `Needs changes: ${rejectionReason}`;
+        } else if (reviewNote) {
+          statusMessage.textContent = `Review note: ${reviewNote}`;
+        } else {
+          statusMessage.textContent = "";
+        }
+
+        const isLocked = normalized === "submitted" || normalized === "approved";
+        submitPlanBtn.disabled = isLocked;
+        savePlanBtn.disabled = isLocked;
+        setFormEditable(!isLocked);
+        if (isLocked) {
+          setUnsavedChanges(false);
+        }
+      };
+
+      const setFormEditable = (isEditable) => {
+        isPlanEditable = isEditable;
+        const inputs = document.querySelectorAll(
+          "input, select, textarea, button, .add-column-btn"
+        );
+        inputs.forEach((el) => {
+          if (el.id === "back-to-orders") return;
+          if (el === submitPlanBtn || el === savePlanBtn) return;
+          if (el.id === "add-stage-toggle") {
+            el.disabled = !isEditable;
+            return;
+          }
+          if (el.tagName === "BUTTON") {
+            el.disabled = !isEditable;
+            return;
+          }
+          if ("disabled" in el) {
+            el.disabled = !isEditable;
+          }
+        });
+        const activityForms = document.querySelectorAll(".activity-form");
+        activityForms.forEach((form) => {
+          if (!isEditable) {
+            form.classList.remove("visible");
+          }
+        });
+      };
+
+      const showToast = (message) => {
+        if (!toastContainer) return;
+        const toast = document.createElement("div");
+        toast.className = "toast";
+        toast.textContent = message;
+        toastContainer.appendChild(toast);
+        requestAnimationFrame(() => {
+          toast.classList.add("show");
+        });
+        setTimeout(() => {
+          toast.classList.remove("show");
+          setTimeout(() => {
+            toast.remove();
+          }, 200);
+        }, 2000);
+      };
+
+      const buildPlanPayload = () => ({
+        orderId,
+        projectName: projectName.value.trim(),
+        customerName: customerName.textContent.trim(),
+        price: priceInput.value.trim(),
+        incharge: inchargeSelect.value,
+        reviewDate: reviewDateInput.value,
+        reviewNotes: reviewNotes.value.trim(),
+        stages: stagesState,
+      });
+
+      const applyPlanPayload = (plan) => {
+        if (!plan) return;
+        if (plan.projectName) projectName.value = plan.projectName;
+        if (plan.customerName) customerName.textContent = plan.customerName;
+        if (plan.price) priceInput.value = plan.price;
+        if (plan.incharge) inchargeSelect.value = plan.incharge;
+        if (plan.reviewDate) reviewDateInput.value = plan.reviewDate;
+        if (plan.reviewNotes) reviewNotes.value = plan.reviewNotes;
+        if (Array.isArray(plan.stages) && plan.stages.length) {
+          stagesState = cloneStages(plan.stages).map((stage) => ({
+            ...stage,
+            _fromPlan: true,
+          }));
+        }
+      };
+
+      const requireAuth = () => {
+        if (!token) {
+          const redirect = encodeURIComponent(
+            `${window.location.pathname}${window.location.search}${window.location.hash || ""}`
+          );
+          window.location.href = `${APP_BASE}/login?redirect=${redirect}`;
+          return false;
+        }
+        return true;
+      };
+
+      const fetchStageActivities = async (stageName) => {
+        if (!currentBoardId) return [];
+        const response = await fetch(
+          `${API_BASE}/data/orders/${orderId}/boards/${currentBoardId}/plan/activities?stage=${encodeURIComponent(stageName)}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (!response.ok) {
+          throw new Error(`Failed to fetch activities (${response.status})`);
+        }
+        const data = await response.json();
+        return data.activities || [];
+      };
+
+      const fetchTemplateActivities = async (stageName) => {
+        const response = await fetch(
+          `${API_BASE}/data/plan/activity-templates?stage=${encodeURIComponent(stageName)}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (!response.ok) {
+          throw new Error(`Failed to fetch activity templates (${response.status})`);
+        }
+        const data = await response.json();
+        return data.activities || [];
+      };
+
+      const saveTemplateActivity = async (stageName, activity, { silent = false } = {}) => {
+        const response = await fetch(`${API_BASE}/data/plan/activity-templates`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ stage: stageName, activity }),
+        });
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          if (!silent) {
+            throw new Error(errorData.message || "Failed to save activity template");
+          }
+          return false;
+        }
+        return true;
+      };
+
+      const fetchAllTemplateActivities = async () => {
+        const response = await fetch(`${API_BASE}/data/plan/activity-templates`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!response.ok) {
+          throw new Error(`Failed to fetch activity templates (${response.status})`);
+        }
+        const data = await response.json();
+        return data.templates || [];
+      };
+
+      const stableActivityKey = (activity) => {
+        if (!activity || typeof activity !== "object") return "";
+        const keys = Object.keys(activity).sort();
+        const entries = keys.map((key) => [key, activity[key]]);
+        return JSON.stringify(entries);
+      };
+
+
+      const isQuantityColumn = (column) => {
+        const key = String(column?.key || "").toLowerCase();
+        const label = String(column?.label || "").toLowerCase();
+        return key === "quantity" || label.includes("quantity");
+      };
+
+      const activityIdentityKey = (activity, stage) => {
+        if (!activity || typeof activity !== "object") return "";
+        const identity = {};
+        const columns = Array.isArray(stage?.columns) ? stage.columns : [];
+        if (columns.length > 0) {
+          columns.forEach((column) => {
+            if (!column?.key) return;
+            if (isCheckColumn(column) || isDateColumn(column) || isQuantityColumn(column)) {
+              return;
+            }
+            identity[column.key] = activity[column.key] ?? "";
+          });
+        } else {
+          Object.keys(activity)
+            .sort()
+            .forEach((key) => {
+              if (["done", "quantity", "date"].includes(key)) return;
+              identity[key] = activity[key];
+            });
+        }
+        if (Object.keys(identity).length === 0) {
+          return stableActivityKey(activity);
+        }
+        const entries = Object.keys(identity)
+          .sort()
+          .map((key) => [key, identity[key]]);
+        return JSON.stringify(entries);
+      };
+
+      const buildTemplateActivity = (stage, activity) => {
+        const template = { ...activity };
+        const columns = Array.isArray(stage?.columns) ? stage.columns : [];
+        columns.forEach((column) => {
+          if (!column?.key) return;
+          if (isDateColumn(column) || isQuantityColumn(column)) {
+            template[column.key] = "";
+          }
+          if (isCheckColumn(column)) {
+            template[column.key] = Boolean(activity[column.key]);
+          }
+        });
+        return template;
+      };
+
+      const mergeActivities = (stage, orderActivities, templates, fallback = []) => {
+        const merged = [];
+        const indexByKey = new Map();
+        const push = (activity) => {
+          const key = activityIdentityKey(activity, stage);
+          if (!key) return;
+          if (indexByKey.has(key)) return;
+          indexByKey.set(key, merged.length);
+          merged.push(activity);
+        };
+        (orderActivities || []).forEach(push);
+        (templates || []).forEach(push);
+        if (merged.length === 0) {
+          (fallback || []).forEach(push);
+        }
+        return merged;
+      };
+
+      const loadStageActivities = async (stage) => {
+        if (!requireAuth()) return;
+        const stageName = stage.name || "";
+        console.log(`[DEBUG] loadStageActivities for stage: ${stageName}`);
+        const templatesPromise = stage._templateActivities
+          ? Promise.resolve(stage._templateActivities)
+          : fetchTemplateActivities(stageName);
+        
+        // Fetch both board activities and templates
+        const fetchActivitiesPromise = orderId && currentBoardId 
+          ? fetchStageActivities(stageName) 
+          : Promise.resolve([]);
+        
+        const [orderActivities, templates] = await Promise.all([
+          fetchActivitiesPromise,
+          templatesPromise,
+        ]);
+        console.log(`[DEBUG] ${stageName}: orderActivities=${orderActivities.length}, templates=${templates.length}`);
+        if (!stage._templateActivities) {
+          stage._templateActivities = templates || [];
+        }
+        stage.activities = mergeActivities(
+          stage,
+          orderActivities,
+          stage._templateActivities || [],
+          stage.activities || []
+        );
+        console.log(`[DEBUG] ${stageName}: After merge, activities=${stage.activities.length}`);
+      };
+
+      const loadAllStageActivities = async () => {
+        if (!requireAuth()) return;
+        await Promise.all(stagesState.map((stage) => loadStageActivities(stage)));
+      };
+
+      const ensureTemplateActivity = async (stage, activity) => {
+        if (!stage?.name) return;
+        const key = activityIdentityKey(activity, stage);
+        if (!key) return;
+        if (!stage._templateActivities) {
+          stage._templateActivities = await fetchTemplateActivities(stage.name);
+        }
+        const exists = (stage._templateActivities || []).some(
+          (entry) => activityIdentityKey(entry, stage) === key
+        );
+        if (!exists) {
+          await saveTemplateActivity(stage.name, activity, { silent: true });
+          stage._templateActivities = (stage._templateActivities || []).concat(
+            buildTemplateActivity(stage, activity)
+          );
+        }
+      };
+
+      const buildStagesFromTemplates = (templates) => {
+        console.log('[DEBUG] buildStagesFromTemplates called with', templates.length, 'templates');
+        const byStage = new Map();
+        const seenByStage = new Map();
+        (templates || []).forEach((entry) => {
+          const stageName = String(entry?.stage || "").trim();
+          if (!stageName) return;
+          let stage = byStage.get(stageName);
+          if (!stage) {
+            stage = {
+              name: stageName,
+              target: "",
+              columns: defaultColumns.map((column) => ({ ...column })),
+              activities: [],
+              reviewDate: "",
+              status: "todo",
+            };
+            byStage.set(stageName, stage);
+            seenByStage.set(stageName, new Set());
+          }
+          const activity = entry?.activity;
+          if (!activity || typeof activity !== "object") return;
+          const key = activityIdentityKey(activity, stage) || stableActivityKey(activity);
+          const seen = seenByStage.get(stageName);
+          if (key && seen.has(key)) return;
+          if (key) seen.add(key);
+          stage.activities.push(activity);
+        });
+        byStage.forEach((stage) => {
+          console.log(`[DEBUG] Stage ${stage.name}: ${stage.activities.length} activities before clearing`);
+          stage._templateActivities = cloneActivities(stage.activities);
+          stage.activities = [];
+        });
+        return Array.from(byStage.values());
+      };
+
+      const savePlan = async (silent = false) => {
+        if (!orderId) return;
+        if (!currentBoardId) return;
+        if (!requireAuth()) return;
+        try {
+          // Save activities for each stage using the board-level endpoint
+          for (const stage of stagesState.filter((entry) => entry?.name)) {
+            const response = await fetch(`${API_BASE}/data/orders/${orderId}/boards/${currentBoardId}/plan/activities`, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                stage: stage.name,
+                activities: stage.activities || [],
+              }),
+            });
+            if (!response.ok) {
+              const errorData = await response.json().catch(() => ({}));
+              const message = errorData.message || "Failed to save activities";
+              throw new Error(`${stage.name}: ${message}`);
+            }
+          }
+          // Save the plan with board_id included
+          const planPayload = {
+            ...buildPlanPayload(),
+            board_id: currentBoardId
+          };
+          const response = await fetch(`${API_BASE}/data/orders/${orderId}/boards/${currentBoardId}/plan`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ plan: planPayload }),
+          });
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || "Failed to save plan");
+          }
+          const data = await response.json();
+          
+          // Cache the plan data including delivery date
+          boardPlansCache[currentBoardId] = {
+            ...buildPlanPayload(),
+            status: data.status || "draft"
+          };
+          
+          setPlanStatus(data.status || "draft");
+          setUnsavedChanges(false);
+          updateOrderCompletionDate();
+          if (!silent) {
+            showToast("Draft saved");
+          }
+          return true;
+        } catch (error) {
+          console.error(error);
+          if (!silent) {
+            statusMessage.textContent = "Unable to save plan.";
+          }
+          return false;
+        }
+      };
+
+      const submitPlan = async () => {
+        if (!orderId) return;
+        if (!currentBoardId) return;
+        if (!requireAuth()) return;
+        try {
+          const response = await fetch(`${API_BASE}/data/orders/${orderId}/boards/${currentBoardId}/plan/submit`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ board_id: currentBoardId }),
+          });
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || "Failed to submit plan");
+          }
+          const data = await response.json();
+          setPlanStatus(data.status || "submitted");
+          setUnsavedChanges(false);
+          showToast("Saved and submitted");
+          setTimeout(() => {
+            window.location.href = "/orders.html";
+          }, 800);
+        } catch (error) {
+          console.error(error);
+          statusMessage.textContent = "Unable to submit plan.";
+        }
+      };
+
+      const saveAndSubmitPlan = async () => {
+        const saved = await savePlan();
+        if (!saved) return;
+        await submitPlan();
+      };
+
+      const loadPlan = async () => {
+        if (!orderId) return;
+        if (!currentBoardId) return;
+        if (!requireAuth()) return;
+        try {
+          // Use board-level plan endpoint
+          const response = await fetch(`${API_BASE}/data/orders/${orderId}/boards/${currentBoardId}/plan`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (response.status === 404) {
+            // No plan yet - this is OK, we'll show default stages
+            console.log('[DEBUG] No plan found for this board, using defaults');
+            return;
+          }
+          if (!response.ok) {
+            throw new Error(`Failed to fetch plan (${response.status})`);
+          }
+          const data = await response.json();
+          console.log('[DEBUG] Fetching all template activities...');
+          const templates = await fetchAllTemplateActivities().catch(() => []);
+          console.log('[DEBUG] Fetched templates:', templates.length, 'total');
+          const templateStages = buildStagesFromTemplates(templates);
+          console.log('[DEBUG] Built stages from templates:', templateStages.length, 'stages');
+          const templateStageByKey = new Map(
+            templateStages.map((stage) => [
+              String(stage?.name || "").trim().toLowerCase(),
+              stage
+            ])
+          );
+          if (data?.plan) {
+            applyPlanPayload(data.plan);
+            
+            // Cache the plan data
+            boardPlansCache[currentBoardId] = {
+              ...data.plan,
+              status: data.status || "draft"
+            };
+          }
+          const planStages = Array.isArray(data?.plan?.stages) ? data.plan.stages : [];
+          if (planStages.length === 0) {
+            // No saved plan for this board - use templates or default stages
+            if (templateStages.length > 0) {
+              stagesState = cloneStages(templateStages);
+            } else {
+              stagesState = cloneStages(defaultStages);
+            }
+            // Load template activities for all stages
+            await loadAllStageActivities();
+          } else if (templateStages.length > 0) {
+            const existingKeys = new Set(
+              stagesState
+                .map((stage) => String(stage?.name || "").trim().toLowerCase())
+                .filter(Boolean)
+            );
+            stagesState.forEach((stage) => {
+              const key = String(stage?.name || "").trim().toLowerCase();
+              const templateStage = templateStageByKey.get(key);
+              if (templateStage && !stage._templateActivities) {
+                stage._templateActivities = cloneActivities(
+                  templateStage._templateActivities || templateStage.activities || []
+                );
+              }
+            });
+            templateStages.forEach((templateStage) => {
+              const key = String(templateStage?.name || "").trim().toLowerCase();
+              if (!key || existingKeys.has(key)) return;
+              existingKeys.add(key);
+              stagesState.push(templateStage);
+            });
+          }
+          // Use plan's own status - not the order's approval status
+          const effectiveStatus = data.status || "draft";
+          const effectiveReviewNote = data.review_note;
+          const effectiveRejectionReason = data.rejection_reason;
+          
+          setPlanStatus(effectiveStatus, effectiveReviewNote, effectiveRejectionReason);
+          await loadAllStageActivities();
+          renderStages();
+          setUnsavedChanges(false);
+        } catch (error) {
+          console.error(error);
+        }
+      };
+
+      addStageToggle.addEventListener("click", () => {
+        stageForm.scrollIntoView({ behavior: "smooth" });
+        document.getElementById("stage-name").focus();
+      });
+
+        stageForm.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const stage = {
+            name: document.getElementById("stage-name").value.trim(),
+            target: document.getElementById("stage-target").value,
+            columns: defaultColumns.map((column) => ({ ...column })),
+            activities: [],
+            reviewDate: "",
+            status: "todo",
+          };
+        if (!stage.name) return;
+        stagesState.push(stage);
+        markUnsaved();
+        renderStages();
+        stageForm.reset();
+      });
+
+      savePlanBtn.addEventListener("click", savePlan);
+      submitPlanBtn.addEventListener("click", saveAndSubmitPlan);
+
+      setPlanStatus("draft");
+      // loadPlan will be called after loadOrderDetails completes and boards are initialized
+    </script>
+  </body>
+</html>
